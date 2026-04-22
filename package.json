@@ -1,0 +1,51 @@
+{
+  "name": "codex-switch",
+  "version": "0.1.0",
+  "description": "Native Codex account switching with a vault-backed CLI and dashboard.",
+  "type": "module",
+  "packageManager": "pnpm@10.33.1",
+  "engines": {
+    "node": ">=22"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "pnpm exec eslint .",
+    "test": "pnpm --filter @codex-switch/cli test && pnpm --filter @codex-switch/dashboard test",
+    "dev:dashboard": "pnpm --filter @codex-switch/dashboard dev",
+    "dev:cli": "pnpm --filter @codex-switch/cli dev",
+    "inspect:codex-logs": "pnpm --filter @codex-switch/cli exec tsx scripts/inspect-codex-logs.ts",
+    "prepack": "node ./scripts/prepack.mjs"
+  },
+  "files": [
+    "bin/",
+    "packages/cli/dist/",
+    "packages/shared/dist/",
+    "packages/dashboard/.next/standalone/",
+    "packages/dashboard/.next/static/",
+    "packages/dashboard/public/",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "pnpm": {
+    "onlyBuiltDependencies": ["better-sqlite3", "esbuild", "sharp"]
+  },
+  "bin": {
+    "codex-switch": "./bin/codex-switch.js",
+    "cs": "./bin/cs.js"
+  },
+  "keywords": ["codex", "cli", "oauth", "account-switching", "nextjs"],
+  "devDependencies": {
+    "@eslint/js": "9.39.1",
+    "@types/node": "24.10.1",
+    "eslint": "9.39.1",
+    "globals": "16.5.0",
+    "prettier": "3.6.2",
+    "tsx": "4.20.6",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.46.2"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "name": "@codex-switch/dashboard",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "pnpm exec next build",
+    "dev": "pnpm exec next dev",
+    "start": "pnpm exec next start",
+    "typecheck": "pnpm exec tsc -p tsconfig.json --noEmit",
+    "test": "pnpm exec tsx test/account-availability.test.ts && pnpm exec tsx test/day-buckets.test.ts"
+  },
+  "dependencies": {
+    "@codex-switch/shared": "workspace:*",
+    "better-sqlite3": "12.9.0",
+    "next": "16.2.4",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "recharts": "3.8.1",
+    "sonner": "2.0.7"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.2.4",
+    "@types/better-sqlite3": "7.6.13",
+    "@types/react": "19.2.2",
+    "@types/react-dom": "19.2.2",
+    "tailwindcss": "4.2.4"
+  }
+}
