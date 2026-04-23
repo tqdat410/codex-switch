@@ -9,7 +9,7 @@
 - Switch between multiple Codex OAuth accounts without forking the Codex runtime.
 - Keep image generation, web browsing, MCP tools, and other native Codex capabilities intact.
 - Provide both CLI and local dashboard workflows.
-- Persist account metadata, session history, and quota samples in a local SQLite database.
+- Persist account metadata, session history, and quota cache state in a local SQLite database.
 
 ## Non-Goals
 
@@ -23,8 +23,8 @@
 1. `cs add --name <name>` opens `codex login` in a temporary `CODEX_HOME`, then stores the resulting auth snapshot in the vault.
 2. `cs use <name>` syncs the current active auth back into the vault, swaps the target snapshot into `~/.codex/auth.json`, and launches Codex.
 3. `cs run ...` reuses the same swap-and-launch path for shell aliases such as `alias codex='cs run'`.
-4. `cs` with no subcommand opens a TUI picker with account and quota context.
-5. `cs dash` starts the local Next.js dashboard, opens a browser, and runs the local log watcher.
+4. `cs` with no subcommand opens a TUI picker with account and cached quota context.
+5. `cs dash` starts the local Next.js dashboard, opens a browser, and runs the local session watcher.
 6. The dashboard supports home, history, and add-account flows through local API routes only.
 
 ## Implemented Feature Scope
@@ -60,8 +60,8 @@
 - Maintain local state in `~/.codex-switch/state.sqlite`.
 - Keep swaps local and filesystem-based.
 - Block conflicting runtime switches with a session lock.
-- Use read-only ingestion of `~/.codex/history.jsonl` and `~/.codex/logs_2.sqlite`.
-- Degrade safely when Codex log schemas differ from assumptions.
+- Use read-only ingestion of `~/.codex/history.jsonl` for sessions and on-demand ChatGPT backend probing for quota.
+- Cache quota per account and degrade safely when the backend endpoint or stored auth becomes invalid.
 
 ## Non-Functional Requirements
 
@@ -87,7 +87,7 @@
 - Vault files and `~/.codex/auth.json` are sensitive secrets.
 - Logger redacts token-shaped fields and `OPENAI_API_KEY`.
 - Dashboard mutations reject cross-origin requests.
-- The log watcher is read-only against Codex-owned files.
+- The log watcher is read-only against Codex-owned files and quota probing never logs raw tokens.
 
 ## Acceptance Criteria
 
@@ -100,6 +100,7 @@
 - Native smoke for real `add`, `use`, `run`, and `dash` against live Codex auth is still manual.
 - Cross-platform global-install validation is not complete.
 - Next standalone build still emits an NFT tracing warning around terminal-spawn code.
+- Quota uses undocumented ChatGPT backend endpoints and may need a fallback patch if OpenAI changes them.
 
 ## Deferred Work
 

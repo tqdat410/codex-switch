@@ -7,7 +7,7 @@
 ## Package Responsibilities
 
 - `packages/shared`: common path helpers, SQL schema, SQL queries, shared types
-- `packages/cli`: auth parsing, vault IO, atomic writes, session lock, Codex launch, TUI, log watcher
+- `packages/cli`: auth parsing, OAuth refresh, quota cache/probe orchestration, vault IO, atomic writes, session lock, Codex launch, TUI, session watcher
 - `packages/dashboard`: local UI, read-only state queries, local API routes, terminal spawn helpers
 
 ## Filesystem Layout
@@ -47,7 +47,7 @@
 - `POST /api/add`
 - `GET /api/sessions`
 - `POST /api/switch`
-- `GET /api/usage`
+- `GET /api/usage` (cache-backed quota state, optional refresh)
 
 All mutations stay local and call back into the CLI.
 
@@ -56,7 +56,9 @@ All mutations stay local and call back into the CLI.
 Tables in `state.sqlite`:
 
 - `accounts`
+- `quota_cache`
 - `quota_samples`
+- `account_auth_state`
 - `sessions`
 - `active`
 
@@ -65,13 +67,15 @@ Shared schema lives in `packages/shared/src/schema.sql`.
 ## Quota and Session Ingestion
 
 - `history.jsonl` contributes session-level rows.
-- `logs_2.sqlite` contributes parsed quota and token usage from `feedback_log_body`.
+- Quota is fetched on demand from `https://chatgpt.com/backend-api/wham/usage` with `/backend-api/codex/usage` fallback.
+- Successful quota probes are cached per account in `quota_cache` with a default 2-minute TTL.
+- Invalid or expired stored auth is surfaced through `account_auth_state` so the CLI/dashboard can show a re-auth banner instead of crashing.
 - Rows older than the current account’s `switched_at` cutoff are skipped so late watcher startup does not misattribute prior activity.
-- Schema notes for observed Codex log shapes live in `packages/shared/docs/codex-log-schema.md`.
 
 ## Failure Modes and Degradation
 
 - Missing or unknown Codex log files do not block switching.
 - Cross-origin dashboard mutations are rejected.
 - If no vault state exists yet, dashboard readers return empty snapshots rather than crashing.
+- If quota probing fails, the dashboard and CLI fall back to the last cached quota row when available.
 - Standalone build currently emits a non-failing NFT tracing warning due terminal spawn code in dashboard routes.

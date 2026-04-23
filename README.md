@@ -9,7 +9,7 @@ It does not proxy API traffic and it does not split `~/.codex/` into per-account
 - `cs` / `codex-switch`: CLI wrapper for add, use, run, sync, remove, dashboard launch
 - Next.js dashboard on localhost for list, switch, history, and add-account flow
 - local SQLite state at `~/.codex-switch/state.sqlite`
-- read-only log/history ingestion for session and quota summaries
+- read-only session ingestion plus on-demand quota probing with a 2-minute cache
 
 ## Requirements
 
@@ -55,6 +55,12 @@ cs use personal
 cs dash
 ```
 
+Force-refresh cached quota:
+
+```bash
+pnpm --filter @codex-switch/cli exec node dist/index.js ls --refresh
+```
+
 ## Recommended shell aliases
 
 PowerShell:
@@ -92,7 +98,7 @@ alias codex='cs run'
 - `Close the running Codex session first`:
   Another `cs use` / `cs run` process still owns the runtime lock.
 - No quota data yet:
-  The watcher degrades gracefully. Session counts still populate from `history.jsonl`, but quota/token fields depend on what Codex currently writes into its local logs.
+  Quota is now fetched on demand from ChatGPT when the dashboard or `cs ls --refresh` asks for it. If refresh fails, the UI shows the last cached value or a re-auth banner instead of parsing Codex logs.
 
 ## Developer utilities
 

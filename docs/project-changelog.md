@@ -20,6 +20,13 @@
 - fixed log-watcher attribution to honor the active account switch cutoff
 - fixed request-per-day bucket generation to use local-day keys
 - fixed add-account polling so navigation/unmount can abort the wait loop
+- moved quota collection from `logs_2.sqlite` polling to on-demand ChatGPT backend probing with a per-account TTL cache
+- rewired dashboard quota UI to show 5h and 7d gauges with refresh/re-auth states
+
+### Removed
+
+- `log-watcher` quota polling from `logs_2.sqlite`
+- the history token-per-week chart that depended on background log parsing
 
 ### Validation
 
