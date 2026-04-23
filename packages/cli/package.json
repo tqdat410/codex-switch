@@ -2,6 +2,20 @@
   "name": "@codex-switch/cli",
   "version": "0.1.0",
   "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./api": {
+      "types": "./dist/api.d.ts",
+      "default": "./dist/api.js"
+    }
+  },
+  "files": [
+    "bin",
+    "dist"
+  ],
   "bin": {
     "codex-switch": "./bin/codex-switch.js",
     "cs": "./bin/cs.js"

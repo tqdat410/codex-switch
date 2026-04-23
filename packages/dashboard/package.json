@@ -8,9 +8,10 @@
     "dev": "pnpm exec next dev",
     "start": "pnpm exec next start",
     "typecheck": "pnpm exec tsc -p tsconfig.json --noEmit",
-    "test": "pnpm exec tsx test/account-availability.test.ts && pnpm exec tsx test/day-buckets.test.ts"
+    "test": "pnpm exec tsx --test test/**/*.test.ts"
   },
   "dependencies": {
+    "@codex-switch/cli": "workspace:*",
     "@codex-switch/shared": "workspace:*",
     "better-sqlite3": "12.9.0",
     "next": "16.2.4",

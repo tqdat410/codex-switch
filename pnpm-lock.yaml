@@ -72,6 +72,9 @@ importers:
 
   packages/dashboard:
     dependencies:
+      '@codex-switch/cli':
+        specifier: workspace:*
+        version: link:../cli
       '@codex-switch/shared':
         specifier: workspace:*
         version: link:../shared
@@ -110,7 +113,11 @@ importers:
         specifier: 4.2.4
         version: 4.2.4
 
-  packages/shared: {}
+  packages/shared:
+    dependencies:
+      zod:
+        specifier: 4.3.6
+        version: 4.3.6
 
 packages:
 

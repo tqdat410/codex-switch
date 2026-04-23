@@ -14,7 +14,7 @@
     "build": "pnpm -r build",
     "typecheck": "pnpm -r typecheck",
     "lint": "pnpm exec eslint .",
-    "test": "pnpm --filter @codex-switch/cli test && pnpm --filter @codex-switch/dashboard test",
+    "test": "pnpm --filter @codex-switch/shared test && pnpm --filter @codex-switch/cli test && pnpm --filter @codex-switch/dashboard test",
     "dev:dashboard": "pnpm --filter @codex-switch/dashboard dev",
     "dev:cli": "pnpm --filter @codex-switch/cli dev",
     "inspect:codex-logs": "pnpm --filter @codex-switch/cli exec tsx scripts/inspect-codex-logs.ts",
