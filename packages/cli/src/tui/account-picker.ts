@@ -1,6 +1,7 @@
 import { cancel, isCancel, select } from '@clack/prompts';
 import { getActiveAccount, listAccounts, openStateDatabase } from '../core/db.js';
 import { formatQuotaSummary, getLatestQuotaByAccount } from '../core/quota-aggregator.js';
+import { getAllAccountAuthStates } from '../core/quota-cache.js';
 
 export async function pickAccountFromTui() {
   const db = openStateDatabase();
@@ -14,6 +15,7 @@ export async function pickAccountFromTui() {
 
     const active = getActiveAccount(db);
     const quotas = getLatestQuotaByAccount(db);
+    const authStates = getAllAccountAuthStates(db);
     const result = await select({
       message: 'Pick a Codex account',
       options: accounts.map((account) => {
@@ -30,7 +32,11 @@ export async function pickAccountFromTui() {
           labelParts.push(account.email);
         }
 
-        labelParts.push(formatQuotaSummary(quotas[account.name] ?? null));
+        if (authStates[account.name]?.requiresReauth) {
+          labelParts.push('reauth required');
+        } else {
+          labelParts.push(formatQuotaSummary(quotas[account.name] ?? null));
+        }
 
         if (account.lastUsedAt) {
           labelParts.push(`used ${formatRelative(account.lastUsedAt)}`);

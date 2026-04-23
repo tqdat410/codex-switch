@@ -68,10 +68,13 @@ function resolveRuntimePaths() {
   const workspacePackagesDir = resolve(cliPackageDir, '..');
   const workspaceRoot = resolve(workspacePackagesDir, '..');
   const dashboardPackageDir = join(workspacePackagesDir, 'dashboard');
+  const sharedPackageDir = join(workspacePackagesDir, 'shared');
   const standaloneRoot = join(dashboardPackageDir, '.next', 'standalone');
 
   return {
+    cliPackageDir,
     workspaceRoot,
+    sharedPackageDir,
     dashboardPackageDir,
     standaloneRoot,
     serverEntry: join(standaloneRoot, 'packages', 'dashboard', 'server.js'),
@@ -86,16 +89,59 @@ function resolveRuntimePaths() {
     ),
     publicDestination: join(standaloneRoot, 'packages', 'dashboard', 'public'),
     cliEntry: join(cliPackageDir, 'dist', 'index.js'),
+    cliApiEntry: join(cliPackageDir, 'dist', 'api.js'),
+    sharedEntry: join(sharedPackageDir, 'dist', 'index.js'),
+    typescriptBin: join(workspaceRoot, 'node_modules', 'typescript', 'bin', 'tsc'),
   };
 }
 
 async function ensureDashboardBuild(runtime: ReturnType<typeof resolveRuntimePaths>) {
-  if (existsSync(runtime.serverEntry) && process.env.CODEX_SWITCH_FORCE_DASH_BUILD !== '1') {
+  if (
+    existsSync(runtime.serverEntry) &&
+    existsSync(runtime.cliEntry) &&
+    existsSync(runtime.cliApiEntry) &&
+    existsSync(runtime.sharedEntry) &&
+    process.env.CODEX_SWITCH_FORCE_DASH_BUILD !== '1'
+  ) {
     return;
   }
 
-  await execa('pnpm', ['--filter', '@codex-switch/dashboard', 'build'], {
-    cwd: runtime.workspaceRoot,
+  // Invoke Next's binary directly via node to avoid pnpm engine checks
+  // scanning unrelated system package.json files (e.g. ERR_PNPM_UNSUPPORTED_ENGINE
+  // from globally resolved packages like `openai-codex-read`).
+  const nextBin = join(
+    runtime.dashboardPackageDir,
+    'node_modules',
+    'next',
+    'dist',
+    'bin',
+    'next',
+  );
+
+  if (!existsSync(nextBin)) {
+    throw new Error(
+      `next binary not found at ${nextBin}. Run "pnpm install" at the workspace root first.`,
+    );
+  }
+
+  if (!existsSync(runtime.typescriptBin)) {
+    throw new Error(
+      `TypeScript binary not found at ${runtime.typescriptBin}. Run "pnpm install" at the workspace root first.`,
+    );
+  }
+
+  await buildTypeScriptPackage(runtime.typescriptBin, runtime.sharedPackageDir);
+  await buildTypeScriptPackage(runtime.typescriptBin, runtime.cliPackageDir);
+
+  await execa(process.execPath, [nextBin, 'build'], {
+    cwd: runtime.dashboardPackageDir,
+    stdio: 'inherit',
+  });
+}
+
+async function buildTypeScriptPackage(typescriptBin: string, packageDir: string) {
+  await execa(process.execPath, [typescriptBin, '-p', 'tsconfig.json'], {
+    cwd: packageDir,
     stdio: 'inherit',
   });
 }

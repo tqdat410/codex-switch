@@ -1,7 +1,6 @@
 import type {
   AccountRecord,
   ActiveAccountState,
-  QuotaSample,
   SessionRow,
 } from '@codex-switch/shared';
 import { STATE_SCHEMA_SQL, vaultStateFile } from '@codex-switch/shared';
@@ -11,7 +10,7 @@ import path from 'node:path';
 
 export type StateDatabase = Database.Database;
 
-export function openStateDatabase(options?: { readonly?: boolean }) {
+export function openStateDatabase(options?: { readonly?: boolean }): StateDatabase {
   const readonly = options?.readonly ?? false;
   if (!readonly) {
     mkdirSync(path.dirname(vaultStateFile()), { recursive: true });
@@ -103,24 +102,10 @@ export function touchAccountLastUsed(db: StateDatabase, name: string) {
 
 export function removeAccount(db: StateDatabase, name: string) {
   db.prepare('DELETE FROM accounts WHERE name = ?').run(name);
+  db.prepare('DELETE FROM quota_cache WHERE account = ?').run(name);
   db.prepare('DELETE FROM quota_samples WHERE account = ?').run(name);
+  db.prepare('DELETE FROM account_auth_state WHERE account = ?').run(name);
   db.prepare('DELETE FROM sessions WHERE account = ?').run(name);
-}
-
-export function insertQuotaSample(db: StateDatabase, sample: QuotaSample) {
-  db.prepare(
-    `INSERT OR IGNORE INTO quota_samples
-      (account, captured_at, limit_kind, used, remaining, reset_at, source)
-     VALUES (?, ?, ?, ?, ?, ?, ?)`,
-  ).run(
-    sample.account,
-    sample.capturedAt,
-    sample.limitKind,
-    sample.used,
-    sample.remaining,
-    sample.resetAt,
-    sample.source,
-  );
 }
 
 export function upsertSession(db: StateDatabase, session: SessionRow) {

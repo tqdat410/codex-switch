@@ -1,9 +1,12 @@
-import type { AccountSummary, QuotaSample, SessionRow } from '@codex-switch/shared';
+import type {
+  AccountSummary,
+  AccountUsageSnapshot,
+  SessionRow,
+} from '@codex-switch/shared';
 import {
-  latestQuotaPerAccountSql,
+  formatQuotaErrorMessage,
   recentSessionsSql,
   requestsPerDaySql,
-  tokensPerWeekSql,
   vaultStateFile,
 } from '@codex-switch/shared';
 import Database from 'better-sqlite3';
@@ -15,7 +18,6 @@ type UsagePoint = Record<string, number | string>;
 export interface UsageSnapshot {
   accounts: string[];
   requestsPerDay: UsagePoint[];
-  tokensPerWeek: UsagePoint[];
 }
 
 export function readAccountsSnapshot(): AccountSummary[] {
@@ -23,26 +25,69 @@ export function readAccountsSnapshot(): AccountSummary[] {
     const active = db
       .prepare('SELECT account FROM active WHERE id = 1')
       .get() as { account: string } | undefined;
-    const latestQuotaRows = db.prepare(latestQuotaPerAccountSql).all() as Array<{
+    const latestQuotaRows = safeAll<{
       account: string;
       captured_at: number;
-      limit_kind: string;
-      used: number | null;
-      remaining: number | null;
-      reset_at: number | null;
-      source: string;
-    }>;
-    const quotaMap = new Map<string, QuotaSample>(
+      five_hour_percent: number | null;
+      five_hour_reset_at: number | null;
+      weekly_percent: number | null;
+      weekly_reset_at: number | null;
+      source: 'wham' | 'codex';
+      stale_reason: string | null;
+    }>(
+      db,
+      `SELECT
+         account,
+         captured_at,
+         five_hour_percent,
+         five_hour_reset_at,
+         weekly_percent,
+         weekly_reset_at,
+         source,
+         stale_reason
+       FROM quota_cache
+       ORDER BY captured_at DESC, account ASC`,
+    );
+    const quotaMap = new Map<string, AccountUsageSnapshot>(
       latestQuotaRows.map((row) => [
         row.account,
         {
-          account: row.account,
+          fiveHour: {
+            percentLeft: row.five_hour_percent,
+            resetAt: row.five_hour_reset_at,
+          },
+          weekly: {
+            percentLeft: row.weekly_percent,
+            resetAt: row.weekly_reset_at,
+          },
           capturedAt: row.captured_at,
-          limitKind: row.limit_kind,
-          used: row.used,
-          remaining: row.remaining,
-          resetAt: row.reset_at,
-          source: row.source,
+          ageMs: Math.max(0, Date.now() - row.captured_at),
+          requiresReauth: row.stale_reason === 'requires_reauth',
+          source: 'cache',
+          error: row.stale_reason
+            ? {
+                code: row.stale_reason,
+                message: formatQuotaError(row.stale_reason),
+              }
+            : null,
+        },
+      ]),
+    );
+    const authStateRows = safeAll<{
+      account: string;
+      requires_reauth: number;
+      last_error: string | null;
+    }>(
+      db,
+      `SELECT account, requires_reauth, last_error
+       FROM account_auth_state`,
+    );
+    const authStateMap = new Map(
+      authStateRows.map((row) => [
+        row.account,
+        {
+          requiresReauth: row.requires_reauth === 1,
+          lastError: row.last_error,
         },
       ]),
     );
@@ -68,7 +113,10 @@ export function readAccountsSnapshot(): AccountSummary[] {
       lastUsedAt: account.last_used_at,
       notes: account.notes,
       isActive: active?.account === account.name,
-      latestQuota: quotaMap.get(account.name) ?? null,
+      latestQuota: mergeUsageState(
+        quotaMap.get(account.name) ?? null,
+        authStateMap.get(account.name),
+      ),
     }));
   }, []);
 }
@@ -80,20 +128,12 @@ export function readUsageSnapshot(from: number, to: number): UsageSnapshot {
       bucket: string;
       request_count: number;
     }>;
-    const tokenRows = db.prepare(tokensPerWeekSql).all(from, to) as Array<{
-      account: string;
-      bucket: string;
-      token_in: number;
-      token_out: number;
-    }>;
     const accountSet = new Set<string>();
 
     requestRows.forEach((row) => accountSet.add(row.account));
-    tokenRows.forEach((row) => accountSet.add(row.account));
 
     const accounts = Array.from(accountSet).sort();
     const requestBuckets = new Map<string, UsagePoint>();
-    const tokenBuckets = new Map<string, UsagePoint>();
 
     for (const bucket of eachLocalDayBucket(from, to)) {
       requestBuckets.set(bucket, { bucket });
@@ -105,19 +145,11 @@ export function readUsageSnapshot(from: number, to: number): UsageSnapshot {
       requestBuckets.set(row.bucket, entry);
     }
 
-    for (const row of tokenRows) {
-      const entry = tokenBuckets.get(row.bucket) ?? { bucket: row.bucket };
-      entry[`${row.account}_in`] = row.token_in;
-      entry[`${row.account}_out`] = row.token_out;
-      tokenBuckets.set(row.bucket, entry);
-    }
-
     return {
       accounts,
       requestsPerDay: Array.from(requestBuckets.values()),
-      tokensPerWeek: Array.from(tokenBuckets.values()),
     };
-  }, { accounts: [], requestsPerDay: [], tokensPerWeek: [] });
+  }, { accounts: [], requestsPerDay: [] });
 }
 
 export function readRecentSessions(limit: number, offset: number) {
@@ -174,4 +206,49 @@ function withDatabase<T>(run: (db: Database.Database) => T, fallback: T) {
   } finally {
     db.close();
   }
+}
+
+function safeAll<T>(db: Database.Database, sql: string, ...params: unknown[]) {
+  try {
+    return db.prepare(sql).all(...params) as T[];
+  } catch {
+    return [];
+  }
+}
+
+function mergeUsageState(
+  usage: AccountUsageSnapshot | null,
+  authState:
+    | {
+        requiresReauth: boolean;
+        lastError: string | null;
+      }
+    | undefined,
+) {
+  if (!usage && !authState) {
+    return null;
+  }
+
+  if (!authState) {
+    return usage;
+  }
+
+  return {
+    fiveHour: usage?.fiveHour ?? null,
+    weekly: usage?.weekly ?? null,
+    capturedAt: usage?.capturedAt ?? null,
+    ageMs: usage?.ageMs ?? null,
+    requiresReauth: authState.requiresReauth,
+    source: usage?.source ?? null,
+    error: authState.lastError
+      ? {
+          code: authState.lastError,
+          message: formatQuotaError(authState.lastError),
+        }
+      : usage?.error ?? null,
+  } satisfies AccountUsageSnapshot;
+}
+
+function formatQuotaError(code: string) {
+  return formatQuotaErrorMessage(code);
 }

@@ -17,6 +17,59 @@ export interface QuotaSample {
   source: string;
 }
 
+export interface QuotaWindow {
+  percentLeft: number | null;
+  resetAt: number | null;
+}
+
+export type QuotaSource = 'wham' | 'codex';
+export type QuotaDisplaySource = QuotaSource | 'cache';
+
+export interface QuotaSnapshot {
+  fiveHour: QuotaWindow | null;
+  weekly: QuotaWindow | null;
+  capturedAt: number;
+  source: QuotaSource;
+}
+
+export interface QuotaCacheRow {
+  account: string;
+  capturedAt: number;
+  fiveHourPercent: number | null;
+  fiveHourResetAt: number | null;
+  weeklyPercent: number | null;
+  weeklyResetAt: number | null;
+  source: QuotaSource;
+  staleReason: string | null;
+}
+
+export interface QuotaErrorSummary {
+  code: string;
+  message: string;
+}
+
+export interface AccountAuthState {
+  account: string;
+  requiresReauth: boolean;
+  lastError: string | null;
+  lastErrorAt: number | null;
+}
+
+export interface AccountUsageSnapshot {
+  fiveHour: QuotaWindow | null;
+  weekly: QuotaWindow | null;
+  capturedAt: number | null;
+  ageMs: number | null;
+  requiresReauth: boolean;
+  source: QuotaDisplaySource | null;
+  error: QuotaErrorSummary | null;
+}
+
+export interface UsageResponse {
+  accounts: Record<string, AccountUsageSnapshot>;
+  ttlMs: number;
+}
+
 export interface SessionRow {
   account: string;
   sessionId: string;
@@ -56,5 +109,5 @@ export interface AuthJson {
 
 export interface AccountSummary extends AccountRecord {
   isActive: boolean;
-  latestQuota: QuotaSample | null;
+  latestQuota: AccountUsageSnapshot | null;
 }

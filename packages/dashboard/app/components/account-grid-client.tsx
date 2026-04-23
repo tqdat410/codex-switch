@@ -1,17 +1,25 @@
 'use client';
 
 import type { AccountSummary } from '@codex-switch/shared';
-import { startTransition, useEffect, useState } from 'react';
+import { startTransition, useState } from 'react';
 import { AccountCard } from './account-card';
+import { useUsagePolling } from '../../lib/usage-hooks';
 
 export function AccountGridClient({
   initialAccounts,
+  pollingEnabled,
 }: Readonly<{
   initialAccounts: AccountSummary[];
+  pollingEnabled: boolean;
 }>) {
   const [accounts, setAccounts] = useState(initialAccounts);
+  const { usage, refresh } = useUsagePolling(
+    Object.fromEntries(initialAccounts.map((account) => [account.name, account.latestQuota])),
+    60_000,
+    pollingEnabled,
+  );
 
-  async function refresh() {
+  async function refreshAccounts() {
     const response = await fetch('/api/accounts', { cache: 'no-store' });
     if (!response.ok) {
       return;
@@ -22,16 +30,6 @@ export function AccountGridClient({
       setAccounts(payload.accounts);
     });
   }
-
-  useEffect(() => {
-    const timer = window.setInterval(() => {
-      void refresh();
-    }, 5000);
-
-    return () => {
-      window.clearInterval(timer);
-    };
-  }, []);
 
   if (accounts.length === 0) {
     return (
@@ -44,7 +42,13 @@ export function AccountGridClient({
   return (
     <div className="grid gap-4 md:grid-cols-2">
       {accounts.map((account) => (
-        <AccountCard key={account.name} account={account} onDone={() => void refresh()} />
+        <AccountCard
+          key={account.name}
+          account={account}
+          usage={usage[account.name] ?? null}
+          onDone={() => void refreshAccounts()}
+          onRefreshUsage={(name) => refresh(name)}
+        />
       ))}
     </div>
   );

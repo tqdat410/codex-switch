@@ -20,6 +20,24 @@ CREATE TABLE IF NOT EXISTS quota_samples (
   UNIQUE(account, captured_at, limit_kind, source)
 );
 
+CREATE TABLE IF NOT EXISTS quota_cache (
+  account TEXT PRIMARY KEY,
+  captured_at INTEGER NOT NULL,
+  five_hour_percent REAL,
+  five_hour_reset_at INTEGER,
+  weekly_percent REAL,
+  weekly_reset_at INTEGER,
+  source TEXT NOT NULL,
+  stale_reason TEXT
+);
+
+CREATE TABLE IF NOT EXISTS account_auth_state (
+  account TEXT PRIMARY KEY,
+  requires_reauth INTEGER NOT NULL DEFAULT 0,
+  last_error TEXT,
+  last_error_at INTEGER
+);
+
 CREATE TABLE IF NOT EXISTS sessions (
   session_id TEXT PRIMARY KEY,
   account TEXT NOT NULL,
@@ -38,6 +56,9 @@ CREATE TABLE IF NOT EXISTS active (
 
 CREATE INDEX IF NOT EXISTS idx_quota_samples_account_captured_at
   ON quota_samples(account, captured_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_quota_cache_captured_at
+  ON quota_cache(captured_at DESC);
 
 CREATE INDEX IF NOT EXISTS idx_sessions_started_at
   ON sessions(started_at DESC);

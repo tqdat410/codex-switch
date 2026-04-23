@@ -1,16 +1,8 @@
-import type { QuotaSample, SessionRow } from '@codex-switch/shared';
-import { extractQuotaSamples, extractTokenUsage } from './log-parsers.js';
+import type { SessionRow } from '@codex-switch/shared';
 
 interface HistoryRowShape {
   session_id?: unknown;
   ts?: unknown;
-}
-
-export interface LogDatabaseRow {
-  id: number;
-  ts: number;
-  thread_id: string | null;
-  feedback_log_body: string | null;
 }
 
 export function parseHistoryChunk(raw: string, account: string, switchedAt: number) {
@@ -43,49 +35,6 @@ export function parseHistoryChunk(raw: string, account: string, switchedAt: numb
   }
 
   return sessions;
-}
-
-export function collectLogUpdates(
-  rows: LogDatabaseRow[],
-  account: string,
-  switchedAt: number,
-) {
-  const quotaSamples: QuotaSample[] = [];
-  const sessions: SessionRow[] = [];
-  let lastLogId = 0;
-
-  for (const row of rows) {
-    lastLogId = row.id;
-    if (!row.feedback_log_body) {
-      continue;
-    }
-
-    const capturedAt = row.ts * 1000;
-    if (capturedAt < switchedAt) {
-      continue;
-    }
-
-    quotaSamples.push(...extractQuotaSamples(row.feedback_log_body, account, capturedAt));
-
-    const tokenUsage = extractTokenUsage(row.feedback_log_body);
-    if (tokenUsage && row.thread_id) {
-      sessions.push({
-        account,
-        sessionId: row.thread_id,
-        startedAt: capturedAt,
-        endedAt: capturedAt,
-        requestCount: 1,
-        tokenIn: tokenUsage.tokenIn,
-        tokenOut: tokenUsage.tokenOut,
-      });
-    }
-  }
-
-  return {
-    quotaSamples,
-    sessions,
-    lastLogId,
-  };
 }
 
 function safeParseJson(raw: string) {

@@ -1,33 +1,30 @@
-import type { QuotaSample } from '@codex-switch/shared';
+import type { QuotaCacheRow } from '@codex-switch/shared';
 import type { StateDatabase } from './db.js';
 
 export function getLatestQuotaByAccount(db: StateDatabase) {
   const rows = db
     .prepare(
-      `WITH ranked AS (
-         SELECT
-           account,
-           captured_at,
-           limit_kind,
-           used,
-           remaining,
-           reset_at,
-           source,
-           ROW_NUMBER() OVER (PARTITION BY account ORDER BY captured_at DESC, id DESC) AS rank
-         FROM quota_samples
-       )
-       SELECT account, captured_at, limit_kind, used, remaining, reset_at, source
-       FROM ranked
-       WHERE rank = 1`,
+      `SELECT
+         account,
+         captured_at,
+         five_hour_percent,
+         five_hour_reset_at,
+         weekly_percent,
+         weekly_reset_at,
+         source,
+         stale_reason
+       FROM quota_cache
+       ORDER BY captured_at DESC, account ASC`,
     )
     .all() as Array<{
     account: string;
     captured_at: number;
-    limit_kind: string;
-    used: number | null;
-    remaining: number | null;
-    reset_at: number | null;
-    source: string;
+    five_hour_percent: number | null;
+    five_hour_reset_at: number | null;
+    weekly_percent: number | null;
+    weekly_reset_at: number | null;
+    source: QuotaCacheRow['source'];
+    stale_reason: string | null;
   }>;
 
   return Object.fromEntries(
@@ -36,31 +33,83 @@ export function getLatestQuotaByAccount(db: StateDatabase) {
       {
         account: row.account,
         capturedAt: row.captured_at,
-        limitKind: row.limit_kind,
-        used: row.used,
-        remaining: row.remaining,
-        resetAt: row.reset_at,
+        fiveHourPercent: row.five_hour_percent,
+        fiveHourResetAt: row.five_hour_reset_at,
+        weeklyPercent: row.weekly_percent,
+        weeklyResetAt: row.weekly_reset_at,
         source: row.source,
-      } satisfies QuotaSample,
+        staleReason: row.stale_reason,
+      } satisfies QuotaCacheRow,
     ]),
-  ) as Record<string, QuotaSample>;
+  ) as Record<string, QuotaCacheRow>;
 }
 
-export function formatQuotaSummary(sample: QuotaSample | null | undefined) {
-  if (!sample) {
+export function formatQuotaSummary(row: QuotaCacheRow | null | undefined) {
+  if (!row) {
     return 'quota unavailable';
   }
 
   const parts: string[] = [];
-  if (sample.used !== null || sample.remaining !== null) {
-    parts.push(`${sample.used ?? '?'} used`);
-    parts.push(`${sample.remaining ?? '?'} left`);
+  if (row.staleReason === 'requires_reauth') {
+    parts.push('reauth required');
   }
 
-  if (sample.resetAt) {
-    const hours = Math.max(0, Math.round((sample.resetAt - Date.now()) / 3_600_000));
-    parts.push(`resets ${hours}h`);
+  const fiveHour = formatWindow('5h', row.fiveHourPercent, row.fiveHourResetAt);
+  if (fiveHour) {
+    parts.push(fiveHour);
   }
 
-  return parts.length > 0 ? parts.join(' · ') : sample.limitKind;
+  const weekly = formatWindow('7d', row.weeklyPercent, row.weeklyResetAt);
+  if (weekly) {
+    parts.push(weekly);
+  }
+
+  parts.push(formatAge(row.capturedAt));
+  return parts.join(' · ');
+}
+
+function formatWindow(label: string, percentLeft: number | null, resetAt: number | null) {
+  if (percentLeft === null && resetAt === null) {
+    return null;
+  }
+
+  const pieces = [`${label}: ${percentLeft === null ? '?' : Math.round(percentLeft)}%`];
+  if (resetAt) {
+    pieces.push(`resets ${formatRemaining(resetAt)}`);
+  }
+
+  return pieces.join(' ');
+}
+
+function formatRemaining(timestamp: number) {
+  const diffMs = Math.max(0, timestamp - Date.now());
+  const diffMinutes = Math.round(diffMs / 60_000);
+  const hours = Math.floor(diffMinutes / 60);
+  const minutes = diffMinutes % 60;
+
+  if (hours > 0) {
+    return `${hours}h ${minutes}m`;
+  }
+
+  return `${minutes}m`;
+}
+
+function formatAge(timestamp: number) {
+  const diffMs = Math.max(0, Date.now() - timestamp);
+  const diffMinutes = Math.round(diffMs / 60_000);
+
+  if (diffMinutes < 1) {
+    return 'just now';
+  }
+
+  if (diffMinutes < 60) {
+    return `${diffMinutes}m ago`;
+  }
+
+  const diffHours = Math.round(diffMinutes / 60);
+  if (diffHours < 24) {
+    return `${diffHours}h ago`;
+  }
+
+  return `${Math.round(diffHours / 24)}d ago`;
 }
