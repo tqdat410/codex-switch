@@ -34,13 +34,13 @@ Run validation after code edits that affect runtime behavior.
 - App routes live under `packages/dashboard/app`.
 - Read-only database access stays in `packages/dashboard/lib/db.ts`.
 - Mutation routes should guard against cross-origin requests and call the CLI rather than reimplement auth changes inside the dashboard.
-- Keep the home quota lab read-only. Account mutation controls belong outside the main monitoring surface.
-- Scope the home quota lab to the active account only. Use targeted `/api/usage?account=<name>` polling when one active account is displayed.
-- Render quota lab 3D with one shared canvas, primitive geometry, and client-only dynamic loading.
-- Keep account names, quota numbers, reset text, and reauth errors in HTML overlays/fallbacks for readability and accessibility.
+- Keep the home command deck full-account: all vault accounts should be visible, while mutations continue through local dashboard API routes.
+- Prefer targeted `/api/usage?account=<name>` polling for the active or selected account. Use explicit user action for refresh-all.
+- Render ambient 2.5D depth with one shared client-only canvas. Canvas content is decorative and must not contain core data or controls.
+- Keep account names, quota numbers, reset text, action controls, and reauth errors in HTML for readability and accessibility.
 - Put pure quota mapping/layout logic in `packages/dashboard/lib` with unit tests.
 - Keep route files that read local vault state dynamic in production.
-- Keep bulky lab-specific styles in `packages/dashboard/app/quota-lab.css`, imported after `globals.css`.
+- Keep command deck-specific styles in `packages/dashboard/app/command-deck.css`, imported after `globals.css`.
 
 ## SQLite Rules
 

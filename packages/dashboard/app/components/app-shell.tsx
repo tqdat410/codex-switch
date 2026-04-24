@@ -10,30 +10,30 @@ export function AppShell({
   title: string;
   description: string;
   hideNavigation?: boolean;
-  variant?: 'standard' | 'lab';
+  variant?: 'standard' | 'command';
   children: React.ReactNode;
 }>) {
-  const isLab = variant === 'lab';
+  const isCommand = variant === 'command';
 
   return (
     <main
       className={
-        isLab
+        isCommand
           ? 'mx-auto min-h-screen max-w-7xl px-4 py-6 sm:px-6 lg:px-8'
           : 'mx-auto min-h-screen max-w-6xl px-5 py-8 sm:px-8'
       }
     >
       <section
         className={
-          isLab
-            ? 'lab-shell'
+          isCommand
+            ? 'command-shell'
             : 'rounded-[32px] border border-[var(--card-border)] bg-[var(--card)] p-6 shadow-[0_30px_80px_rgba(20,29,51,0.12)] backdrop-blur sm:p-8'
         }
       >
         <div
           className={
-            isLab
-              ? 'lab-header'
+            isCommand
+              ? 'command-shell__header'
               : 'flex flex-col gap-6 border-b border-black/6 pb-6 sm:flex-row sm:items-end sm:justify-between'
           }
         >
@@ -56,7 +56,7 @@ export function AppShell({
             </nav>
           )}
         </div>
-        <div className={isLab ? 'pt-5' : 'pt-6'}>{children}</div>
+        <div className={isCommand ? 'pt-5' : 'pt-6'}>{children}</div>
       </section>
     </main>
   );

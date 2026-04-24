@@ -4,19 +4,21 @@
 
 ### Added
 
-- read-only quota lab dashboard with one R3F/Three scene for all account tubes
-- HTML quota overlays and CSS fallback for WebGL-disabled browsers
-- quota lab view-model tests covering clamping, tones, reauth, and 9+ account layout
-- active-account bioreactor tube with procedural glass, liquid chambers, clamps, ports, and hoses
-- focused `quota-lab.css` stylesheet for lab-specific layout and fallback styles
+- full-account command deck home with account cards, selected telemetry, activity preview, refresh-all, switch, remove, add, and history entry points
+- command deck view-model tests covering default selection, quota thresholds, reauth override, unknown quota, duration, and compact number formatting
+- decorative command deck ambient Three/R3F layer with CSS fallback and no data/control ownership
+- command deck stylesheet for the full-account home surface
 
 ### Changed
 
-- main dashboard no longer shows history/add/switch/remove controls
-- home page keeps one refresh action for cached quota data
+- home dashboard now shows every vault account on one surface
+- quota polling remains targeted for active/selected account unless the user explicitly refreshes all accounts
+- dashboard home mutation controls route through existing local API boundaries
+- home page keeps selected-account refresh plus explicit refresh-all for cached quota data
+- selected-account telemetry carries focused quota/status details while every vault account remains visible
+- add/history entry points and switch/remove controls remain available from the command deck home
 - dashboard build config transpiles `three`
-- home quota lab now renders only the active account and targets quota polling to that account
-- quota overlay and WebGL fallback now show one active-account telemetry panel instead of a multi-account grid
+- previous narrowed dashboard scope has been superseded by the full-account command deck
 
 ### Fixed
 
@@ -24,6 +26,7 @@
 
 ### Removed
 
+- obsolete `quota-lab-*` components, `quota-lab.css`, and quota lab view-model/tests after command deck replacement
 - obsolete card/gauge/switch components from the old home dashboard surface
 
 ### Validation

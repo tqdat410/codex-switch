@@ -30,7 +30,7 @@
 - A session lock file under `~/.codex-switch/.lock` prevents overlapping swap flows.
 - Lock acquisition uses exclusive create semantics.
 - The release path verifies lock ownership with a per-lock token.
-- `launchCodex()` shells out to the real `codex` binary and forwards termination signals.
+- The `launchCodex` helper shells out to the real `codex` binary and forwards termination signals.
 
 ## Dashboard Runtime Model
 
@@ -38,9 +38,9 @@
 - It copies static/public assets into the standalone tree.
 - It starts the CLI-side log watcher.
 - It launches the standalone Next server and opens a browser unless disabled.
-- The main page is a read-only active-account quota reactor: runtime account snapshot, active-account-only quota polling, one R3F/Three canvas for the bioreactor scene, HTML quota telemetry for readable account details.
+- The main page is a full-account command deck: runtime account snapshot, selected/active-account quota polling, explicit refresh-all, switch/remove actions through local API routes, activity preview, and selected-account telemetry.
 - The home route is forced dynamic so production dashboard reads the runtime vault instead of build-time vault state.
-- If WebGL is unavailable, the same active account view-model feeds a CSS fallback instead of the canvas.
+- One R3F/Three canvas provides decorative ambient depth only. If WebGL is unavailable, the CSS command deck remains fully usable.
 
 ## Local API Inventory
 
@@ -74,7 +74,7 @@ Shared schema lives in `packages/shared/src/schema.sql`.
 - Successful quota probes are cached per account in `quota_cache` with a default 2-minute TTL.
 - Invalid or expired stored auth is surfaced through `account_auth_state` so the CLI/dashboard can show a re-auth banner instead of crashing.
 - Rows older than the current account’s `switched_at` cutoff are skipped so late watcher startup does not misattribute prior activity.
-- Dashboard quota visualization maps the active account weekly remaining quota to the upper reservoir and 5h remaining quota to the lower liquid chamber. Exact values remain in HTML text, not 3D text.
+- Dashboard quota visualization maps every account into HTML cards and selected-account telemetry. Exact values, errors, and controls remain in HTML, not 3D text.
 
 ## Failure Modes and Degradation
 

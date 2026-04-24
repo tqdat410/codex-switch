@@ -25,7 +25,7 @@
 3. `cs run ...` reuses the same swap-and-launch path for shell aliases such as `alias codex='cs run'`.
 4. `cs` with no subcommand opens a TUI picker with account and cached quota context.
 5. `cs dash` starts the local Next.js dashboard, opens a browser, and runs the local session watcher.
-6. The dashboard supports home, history, and add-account flows through local API routes only.
+6. The dashboard supports a full-account command deck home, history, and add-account flows through local API routes only.
 
 ## Implemented Feature Scope
 
@@ -43,7 +43,7 @@
 
 ### Dashboard
 
-- `/` account grid
+- `/` full-account command deck with account cards, selected telemetry, activity preview, refresh-all, switch/remove controls, and add/history entry points
 - `/history` usage charts and sessions table
 - `/add` account onboarding flow
 - `/api/accounts`
@@ -62,6 +62,9 @@
 - Block conflicting runtime switches with a session lock.
 - Use read-only ingestion of `~/.codex/history.jsonl` for sessions and on-demand ChatGPT backend probing for quota.
 - Cache quota per account and degrade safely when the backend endpoint or stored auth becomes invalid.
+- Poll quota with targeted `/api/usage?account=<name>` requests for the active or selected account, and reserve full refresh for explicit user action.
+- Keep dashboard mutations local through `/api/switch`, `/api/add`, and `/api/accounts/[name]`; routes validate names, reject cross-origin requests, and call CLI helpers.
+- Keep the command deck usable without WebGL; the Three/R3F layer is decorative ambient depth only and owns no core data or controls.
 
 ## Non-Functional Requirements
 
