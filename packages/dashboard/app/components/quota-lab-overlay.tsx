@@ -14,76 +14,80 @@ export function QuotaLabOverlay({
   items,
   pending = false,
 }: Readonly<QuotaLabOverlayProps>) {
+  const item = getActiveItem(items);
+
+  if (!item) {
+    return (
+      <section
+        className="quota-lab-overlay quota-lab-overlay--empty"
+        role="status"
+      >
+        No active account quota data.
+      </section>
+    );
+  }
+
+  const accountState = getAccountState(item);
+  const labelId = `quota-overlay-${item.layout.index}`;
+  const tone = getDominantTone(item);
+
   return (
-    <ol className="quota-lab-overlay" aria-label="Account quota details">
-      {items.map((item) => {
-        const accountState = getAccountState(item);
-        const labelId = `quota-overlay-${item.layout.index}`;
-        const tone = getDominantTone(item);
-
-        return (
-          <li
-            key={item.name}
-            className={`quota-lab-overlay__item quota-lab-overlay__item--${tone}`}
-          >
-            <article
-              className="quota-lab-overlay__card"
-              aria-labelledby={labelId}
+    <section
+      className={`quota-lab-overlay quota-lab-overlay--${tone}`}
+      aria-label="Active account quota telemetry"
+    >
+      <article className="quota-lab-overlay__panel" aria-labelledby={labelId}>
+        <header className="quota-lab-overlay__header">
+          <div className="quota-lab-overlay__identity">
+            <div className="quota-lab-overlay__identity-copy">
+              <h2 id={labelId} className="quota-lab-overlay__name">
+                {item.name}
+              </h2>
+              <p className="quota-lab-overlay__meta">
+                <span>{item.email}</span>
+                <span aria-hidden="true">/</span>
+                <span>{item.plan}</span>
+              </p>
+            </div>
+            <span
+              className="quota-lab-overlay__active"
+              aria-label={item.isActive ? 'Active account' : 'Displayed account'}
             >
-              <header className="quota-lab-overlay__header">
-                <div className="quota-lab-overlay__identity">
-                  <h2 id={labelId} className="quota-lab-overlay__name">
-                    {item.name}
-                  </h2>
-                  {item.isActive ? (
-                    <span
-                      className="quota-lab-overlay__active"
-                      aria-label="Active account"
-                    >
-                      Active
-                    </span>
-                  ) : null}
-                </div>
-                <p className="quota-lab-overlay__meta">
-                  <span>{item.email}</span>
-                  <span aria-hidden="true">/</span>
-                  <span>{item.plan}</span>
-                </p>
-              </header>
+              {item.isActive ? 'Active' : 'Displayed'}
+            </span>
+          </div>
+        </header>
 
-              <dl className="quota-lab-overlay__quotas">
-                <QuotaDetail
-                  label="5h"
-                  percent={item.fiveHour.percent}
-                  reset={item.fiveHour.resetLabel}
-                />
-                <QuotaDetail
-                  label="Weekly"
-                  percent={item.weekly.percent}
-                  reset={item.weekly.resetLabel}
-                />
-              </dl>
+        <dl className="quota-lab-overlay__quotas">
+          <QuotaDetail
+            label="5h"
+            percent={item.fiveHour.percent}
+            reset={item.fiveHour.resetLabel}
+          />
+          <QuotaDetail
+            label="Weekly"
+            percent={item.weekly.percent}
+            reset={item.weekly.resetLabel}
+          />
+        </dl>
 
-              <div className="quota-lab-overlay__status">
-                <span
-                  className={`quota-lab-overlay__state quota-lab-overlay__state--${accountState.tone}`}
-                >
-                  {accountState.label}
-                </span>
-                <span className="quota-lab-overlay__updated">
-                  {pending ? 'Updating quota data' : item.updatedLabel}
-                </span>
-                {item.errorMessage ? (
-                  <span className="quota-lab-overlay__error" role="status">
-                    {item.errorMessage}
-                  </span>
-                ) : null}
-              </div>
-            </article>
-          </li>
-        );
-      })}
-    </ol>
+        <div className="quota-lab-overlay__status">
+          <span
+            className={`quota-lab-overlay__state quota-lab-overlay__state--${accountState.tone}`}
+          >
+            {accountState.label}
+          </span>
+          <span className="quota-lab-overlay__updated">
+            {pending ? 'Updating quota data' : item.updatedLabel}
+          </span>
+          {item.errorMessage ? (
+            <span className="quota-lab-overlay__error" role="status">
+              {item.errorMessage}
+            </span>
+          ) : null}
+        </div>
+      </article>
+    </section>
   );
 }
 
@@ -150,4 +154,8 @@ export function getDominantTone(item: LabAccountItem): QuotaTone {
   }
 
   return 'healthy';
+}
+
+function getActiveItem(items: readonly LabAccountItem[]) {
+  return items.find((item) => item.isActive) ?? items[0] ?? null;
 }

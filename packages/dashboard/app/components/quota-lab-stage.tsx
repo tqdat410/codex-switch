@@ -34,6 +34,7 @@ export function QuotaLabStage({
   const [webGlState, setWebGlState] = useState<WebGlState>('checking');
   const [refreshing, setRefreshing] = useState(false);
   const [refreshError, setRefreshError] = useState<string | null>(null);
+  const activeItem = getActiveItem(items);
   const busy = pending || refreshing;
 
   useEffect(() => {
@@ -56,14 +57,16 @@ export function QuotaLabStage({
   return (
     <section
       className="quota-lab-stage"
-      aria-label="Quota lab dashboard"
+      aria-label="Active account quota dashboard"
       aria-busy={busy}
     >
       <header className="quota-lab-stage__header">
         <div className="quota-lab-stage__heading">
-          <h1 className="quota-lab-stage__title">Quota lab</h1>
+          <h1 className="quota-lab-stage__title">Active quota reactor</h1>
           <p className="quota-lab-stage__summary">
-            {items.length === 1 ? '1 account' : `${items.length} accounts`}
+            {activeItem
+              ? `${activeItem.name} / ${activeItem.plan}`
+              : 'No active account'}
           </p>
         </div>
         <button
@@ -125,4 +128,8 @@ function hasWebGlSupport() {
   } catch {
     return false;
   }
+}
+
+function getActiveItem(items: readonly LabAccountItem[]) {
+  return items.find((item) => item.isActive) ?? items[0] ?? null;
 }

@@ -5,7 +5,12 @@ import { startTransition, useEffect, useEffectEvent, useState } from 'react';
 
 type UsageMap = Record<string, AccountUsageSnapshot | null>;
 
-export function useUsagePolling(initialUsage: UsageMap, ttlMs: number, enabled: boolean) {
+export function useUsagePolling(
+  initialUsage: UsageMap,
+  ttlMs: number,
+  enabled: boolean,
+  targetAccount?: string | null,
+) {
   const [usage, setUsage] = useState<UsageMap>(initialUsage);
   const [pending, setPending] = useState(false);
 
@@ -56,20 +61,20 @@ export function useUsagePolling(initialUsage: UsageMap, ttlMs: number, enabled: 
 
       if (document.visibilityState === 'visible') {
         timer = window.setInterval(() => {
-          void fetchUsage();
+          void fetchUsage(targetAccount ? { account: targetAccount } : undefined);
         }, Math.max(60_000, ttlMs));
       }
     };
 
     const onVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
-        void fetchUsage();
+        void fetchUsage(targetAccount ? { account: targetAccount } : undefined);
       }
 
       schedule();
     };
 
-    void fetchUsage();
+    void fetchUsage(targetAccount ? { account: targetAccount } : undefined);
     schedule();
     document.addEventListener('visibilitychange', onVisibilityChange);
 
@@ -79,7 +84,7 @@ export function useUsagePolling(initialUsage: UsageMap, ttlMs: number, enabled: 
       }
       document.removeEventListener('visibilitychange', onVisibilityChange);
     };
-  }, [enabled, ttlMs]);
+  }, [enabled, targetAccount, ttlMs]);
 
   return {
     usage,

@@ -6,6 +6,7 @@ import {
   clampPercent,
   computeLabGrid,
   quotaTone,
+  selectActiveAccount,
 } from '../lib/quota-lab-view-model';
 
 test('clampPercent preserves null and clamps numeric bounds', () => {
@@ -75,7 +76,48 @@ test('buildQuotaLabItems surfaces reauth state above quota percentages', () => {
   assert.equal(item?.weekly.tone, 'reauth');
 });
 
-function accountSummary(name: string, isActive: boolean): AccountSummary {
+test('selectActiveAccount returns the active account from a mixed vault', () => {
+  const accounts = [
+    accountSummary('personal', false),
+    accountSummary('work', true),
+    accountSummary('sandbox', false),
+  ];
+
+  const activeAccount = selectActiveAccount(accounts);
+  const items = activeAccount ? buildQuotaLabItems([activeAccount], {}) : [];
+
+  assert.equal(activeAccount?.name, 'work');
+  assert.equal(items.length, 1);
+  assert.equal(items[0]?.name, 'work');
+});
+
+test('selectActiveAccount returns null when no account is active', () => {
+  const accounts = [accountSummary('personal', false), accountSummary('work', false)];
+
+  assert.equal(selectActiveAccount(accounts), null);
+});
+
+test('active account mapping falls back to latest quota snapshot', () => {
+  const activeAccount = accountSummary('personal', true, {
+    latestQuota: usageSnapshot({
+      fiveHourPercent: 17,
+      weeklyPercent: 73,
+    }),
+  });
+
+  const [item] = buildQuotaLabItems([activeAccount], {});
+
+  assert.equal(item?.fiveHour.percent, 17);
+  assert.equal(item?.fiveHour.tone, 'danger');
+  assert.equal(item?.weekly.percent, 73);
+  assert.equal(item?.weekly.tone, 'healthy');
+});
+
+function accountSummary(
+  name: string,
+  isActive: boolean,
+  overrides: Partial<AccountSummary> = {},
+): AccountSummary {
   return {
     name,
     email: `${name}@example.test`,
@@ -85,6 +127,7 @@ function accountSummary(name: string, isActive: boolean): AccountSummary {
     notes: null,
     isActive,
     latestQuota: null,
+    ...overrides,
   };
 }
 

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Toaster } from 'sonner';
 import './globals.css';
+import './quota-lab.css';
 
 export const metadata: Metadata = {
   title: 'codex-switch',

@@ -71,6 +71,10 @@ export function computeLabGrid(count: number) {
   };
 }
 
+export function selectActiveAccount(accounts: AccountSummary[]) {
+  return accounts.find((account) => account.isActive) ?? null;
+}
+
 export function buildQuotaLabItems(
   accounts: AccountSummary[],
   usageByAccount: UsageMap,

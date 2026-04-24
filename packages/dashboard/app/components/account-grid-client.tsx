@@ -3,7 +3,10 @@
 import type { AccountSummary } from '@codex-switch/shared';
 import { startTransition, useMemo, useState } from 'react';
 import { QuotaLabStage } from './quota-lab-stage';
-import { buildQuotaLabItems } from '../../lib/quota-lab-view-model';
+import {
+  buildQuotaLabItems,
+  selectActiveAccount,
+} from '../../lib/quota-lab-view-model';
 import { useUsagePolling } from '../../lib/usage-hooks';
 
 export function AccountGridClient({
@@ -14,12 +17,20 @@ export function AccountGridClient({
   pollingEnabled: boolean;
 }>) {
   const [accounts, setAccounts] = useState(initialAccounts);
+  const activeAccount = useMemo(() => selectActiveAccount(accounts), [accounts]);
+  const initialActiveAccount = selectActiveAccount(initialAccounts);
   const { usage, pending, refresh } = useUsagePolling(
-    Object.fromEntries(initialAccounts.map((account) => [account.name, account.latestQuota])),
+    initialActiveAccount
+      ? { [initialActiveAccount.name]: initialActiveAccount.latestQuota }
+      : {},
     60_000,
-    pollingEnabled,
+    pollingEnabled && Boolean(activeAccount),
+    activeAccount?.name,
   );
-  const labItems = useMemo(() => buildQuotaLabItems(accounts, usage), [accounts, usage]);
+  const labItems = useMemo(
+    () => (activeAccount ? buildQuotaLabItems([activeAccount], usage) : []),
+    [activeAccount, usage],
+  );
 
   async function refreshAccounts() {
     const response = await fetch('/api/accounts', { cache: 'no-store' });
@@ -34,7 +45,9 @@ export function AccountGridClient({
   }
 
   async function refreshLabData() {
-    await refresh();
+    if (activeAccount) {
+      await refresh(activeAccount.name);
+    }
     await refreshAccounts();
   }
 
@@ -43,6 +56,25 @@ export function AccountGridClient({
       <div className="lab-empty-state">
         <p>No accounts in the vault yet.</p>
         <p>Open the add-account route directly when you are ready to ingest a Codex login.</p>
+      </div>
+    );
+  }
+
+  if (!activeAccount) {
+    return (
+      <div className="lab-empty-state" role="status">
+        <p>No active account recorded.</p>
+        <p>Switch to an account from the CLI, then refresh this dashboard.</p>
+        <button
+          type="button"
+          className="quota-lab-stage__refresh"
+          disabled={pending}
+          onClick={() => {
+            void refreshAccounts();
+          }}
+        >
+          {pending ? 'Refreshing...' : 'Refresh accounts'}
+        </button>
       </div>
     );
   }

@@ -7,12 +7,20 @@
 - read-only quota lab dashboard with one R3F/Three scene for all account tubes
 - HTML quota overlays and CSS fallback for WebGL-disabled browsers
 - quota lab view-model tests covering clamping, tones, reauth, and 9+ account layout
+- active-account bioreactor tube with procedural glass, liquid chambers, clamps, ports, and hoses
+- focused `quota-lab.css` stylesheet for lab-specific layout and fallback styles
 
 ### Changed
 
 - main dashboard no longer shows history/add/switch/remove controls
 - home page keeps one refresh action for cached quota data
 - dashboard build config transpiles `three`
+- home quota lab now renders only the active account and targets quota polling to that account
+- quota overlay and WebGL fallback now show one active-account telemetry panel instead of a multi-account grid
+
+### Fixed
+
+- production dashboard home route now reads runtime vault state instead of static build-time account data
 
 ### Removed
 
@@ -26,6 +34,7 @@
 - `pnpm build`
 - desktop/mobile browser smoke with seeded fake account data
 - forced WebGL fallback smoke
+- production desktop/mobile/fallback smoke with seeded active and inactive account data
 
 ## 2026-04-23
 
