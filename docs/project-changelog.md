@@ -1,5 +1,32 @@
 # Project Changelog
 
+## 2026-04-24
+
+### Added
+
+- read-only quota lab dashboard with one R3F/Three scene for all account tubes
+- HTML quota overlays and CSS fallback for WebGL-disabled browsers
+- quota lab view-model tests covering clamping, tones, reauth, and 9+ account layout
+
+### Changed
+
+- main dashboard no longer shows history/add/switch/remove controls
+- home page keeps one refresh action for cached quota data
+- dashboard build config transpiles `three`
+
+### Removed
+
+- obsolete card/gauge/switch components from the old home dashboard surface
+
+### Validation
+
+- `pnpm test`
+- `pnpm typecheck`
+- `pnpm lint`
+- `pnpm build`
+- desktop/mobile browser smoke with seeded fake account data
+- forced WebGL fallback smoke
+
 ## 2026-04-23
 
 ### Added

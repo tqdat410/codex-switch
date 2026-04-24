@@ -34,6 +34,10 @@ Run validation after code edits that affect runtime behavior.
 - App routes live under `packages/dashboard/app`.
 - Read-only database access stays in `packages/dashboard/lib/db.ts`.
 - Mutation routes should guard against cross-origin requests and call the CLI rather than reimplement auth changes inside the dashboard.
+- Keep the home quota lab read-only. Account mutation controls belong outside the main monitoring surface.
+- Render quota lab 3D with one shared canvas, primitive geometry, and client-only dynamic loading.
+- Keep account names, quota numbers, reset text, and reauth errors in HTML overlays/fallbacks for readability and accessibility.
+- Put pure quota mapping/layout logic in `packages/dashboard/lib` with unit tests.
 
 ## SQLite Rules
 

@@ -8,8 +8,10 @@ export default function HomePage() {
 
   return (
     <AppShell
-      title="Native account switcher"
-      description="Swap Codex OAuth accounts without a proxy. The dashboard stays local, reads your vault state, and opens new terminals for login and switching."
+      title="Quota lab"
+      description="Read-only local quota monitoring for every Codex account in your vault. Weekly capacity fills the upper chamber; 5h capacity fills the lower chamber."
+      hideNavigation
+      variant="lab"
     >
       <AccountGridClient initialAccounts={accounts} pollingEnabled={pollingEnabled} />
     </AppShell>

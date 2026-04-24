@@ -4,7 +4,7 @@
 
 - `packages/shared`: shared types, paths, SQL schema, SQL queries
 - `packages/cli`: commander-based CLI, vault logic, swap flow, TUI, watcher
-- `packages/dashboard`: Next.js app, local API routes, charts, add/history pages
+- `packages/dashboard`: Next.js app, read-only quota lab home, local API routes, charts, add/history pages
 - `bin`: publish-time bin shims
 - `scripts`: packaging helpers
 - `plans`: brainstorm + implementation plan artifacts
@@ -13,7 +13,7 @@
 
 - `@codex-switch/shared`: exports path helpers for `~/.codex` and `~/.codex-switch`, plus SQLite schema and query strings.
 - `@codex-switch/cli`: owns account add/use/run/sync/remove flows, session locking, atomic writes, and the dashboard launcher.
-- `@codex-switch/dashboard`: reads the shared SQLite state read-only and exposes a local dashboard plus local mutation routes that shell out to the CLI.
+- `@codex-switch/dashboard`: reads the shared SQLite state read-only, renders the home quota lab with one client-only Three/R3F canvas plus HTML fallback, and exposes local mutation routes that shell out to the CLI.
 
 ## Primary Commands
 

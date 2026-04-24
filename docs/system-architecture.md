@@ -38,6 +38,8 @@
 - It copies static/public assets into the standalone tree.
 - It starts the CLI-side log watcher.
 - It launches the standalone Next server and opens a browser unless disabled.
+- The main page is a read-only quota lab: server-rendered account snapshot, client-side quota polling, one R3F/Three canvas for the lab scene, HTML quota overlays for readable account details.
+- If WebGL is unavailable, the same quota view-model feeds a CSS fallback instead of the canvas.
 
 ## Local API Inventory
 
@@ -71,6 +73,7 @@ Shared schema lives in `packages/shared/src/schema.sql`.
 - Successful quota probes are cached per account in `quota_cache` with a default 2-minute TTL.
 - Invalid or expired stored auth is surfaced through `account_auth_state` so the CLI/dashboard can show a re-auth banner instead of crashing.
 - Rows older than the current account’s `switched_at` cutoff are skipped so late watcher startup does not misattribute prior activity.
+- Dashboard quota visualization maps weekly remaining quota to the upper sphere chamber and 5h remaining quota to the lower cylinder chamber. Exact values remain in HTML text, not 3D text.
 
 ## Failure Modes and Degradation
 

@@ -1,8 +1,9 @@
 'use client';
 
 import type { AccountSummary } from '@codex-switch/shared';
-import { startTransition, useState } from 'react';
-import { AccountCard } from './account-card';
+import { startTransition, useMemo, useState } from 'react';
+import { QuotaLabStage } from './quota-lab-stage';
+import { buildQuotaLabItems } from '../../lib/quota-lab-view-model';
 import { useUsagePolling } from '../../lib/usage-hooks';
 
 export function AccountGridClient({
@@ -13,11 +14,12 @@ export function AccountGridClient({
   pollingEnabled: boolean;
 }>) {
   const [accounts, setAccounts] = useState(initialAccounts);
-  const { usage, refresh } = useUsagePolling(
+  const { usage, pending, refresh } = useUsagePolling(
     Object.fromEntries(initialAccounts.map((account) => [account.name, account.latestQuota])),
     60_000,
     pollingEnabled,
   );
+  const labItems = useMemo(() => buildQuotaLabItems(accounts, usage), [accounts, usage]);
 
   async function refreshAccounts() {
     const response = await fetch('/api/accounts', { cache: 'no-store' });
@@ -31,25 +33,19 @@ export function AccountGridClient({
     });
   }
 
+  async function refreshLabData() {
+    await refresh();
+    await refreshAccounts();
+  }
+
   if (accounts.length === 0) {
     return (
-      <div className="rounded-[24px] border border-dashed border-[var(--card-border)] bg-white/80 p-8 text-center text-[var(--muted)]">
-        No accounts yet. Open the Add Account screen to ingest a new Codex login.
+      <div className="lab-empty-state">
+        <p>No accounts in the vault yet.</p>
+        <p>Open the add-account route directly when you are ready to ingest a Codex login.</p>
       </div>
     );
   }
 
-  return (
-    <div className="grid gap-4 md:grid-cols-2">
-      {accounts.map((account) => (
-        <AccountCard
-          key={account.name}
-          account={account}
-          usage={usage[account.name] ?? null}
-          onDone={() => void refreshAccounts()}
-          onRefreshUsage={(name) => refresh(name)}
-        />
-      ))}
-    </div>
-  );
+  return <QuotaLabStage items={labItems} pending={pending} onRefresh={refreshLabData} />;
 }
