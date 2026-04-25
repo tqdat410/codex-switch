@@ -56,18 +56,14 @@ cs rm <name>               Remove an account from the vault
 
 ## Quota Status
 
-`cs status` shows compact 5-hour and weekly quota bars:
+`cs status` shows:
 
-```text
-╭───────────────────────────────┬──────────────────────────────┬──────────────────────────────────────╮
-│ Account (1)                   │ 5h Limit                     │ Weekly Limit                         │
-├───────────────────────────────┼──────────────────────────────┼──────────────────────────────────────┤
-│ * personal                    │ [████████············] 42%   │ [█████████████████···] 84%           │
-│ (Pro / user@example.com)      │ (resets 16:52)               │ (resets 13:04 on 29 Apr)             │
-╰───────────────────────────────┴──────────────────────────────┴──────────────────────────────────────╯
-```
+- all saved accounts
+- the active account marker
+- 5-hour and weekly quota bars
+- reset times, stale states, and re-auth warnings
 
-`█` means quota left. Dim `·` means quota used or unavailable. Unknown quota is shown as `--`.
+The terminal output uses `█` for quota left and dim `░` for used or unavailable quota. Unknown quota is shown as `--`.
 
 ## Storage
 
