@@ -1,8 +1,4 @@
-import type {
-  AccountRecord,
-  ActiveAccountState,
-  SessionRow,
-} from '@codex-switch/shared';
+import type { AccountRecord, ActiveAccountState } from '@codex-switch/shared';
 import { STATE_SCHEMA_SQL, vaultStateFile } from '@codex-switch/shared';
 import Database from 'better-sqlite3';
 import { mkdirSync } from 'node:fs';
@@ -103,30 +99,5 @@ export function touchAccountLastUsed(db: StateDatabase, name: string) {
 export function removeAccount(db: StateDatabase, name: string) {
   db.prepare('DELETE FROM accounts WHERE name = ?').run(name);
   db.prepare('DELETE FROM quota_cache WHERE account = ?').run(name);
-  db.prepare('DELETE FROM quota_samples WHERE account = ?').run(name);
   db.prepare('DELETE FROM account_auth_state WHERE account = ?').run(name);
-  db.prepare('DELETE FROM sessions WHERE account = ?').run(name);
-}
-
-export function upsertSession(db: StateDatabase, session: SessionRow) {
-  db.prepare(
-    `INSERT INTO sessions
-      (session_id, account, started_at, ended_at, request_count, token_in, token_out)
-     VALUES (?, ?, ?, ?, ?, ?, ?)
-     ON CONFLICT(session_id) DO UPDATE SET
-       account = excluded.account,
-       started_at = MIN(sessions.started_at, excluded.started_at),
-       ended_at = COALESCE(excluded.ended_at, sessions.ended_at),
-       request_count = MAX(sessions.request_count, excluded.request_count),
-       token_in = COALESCE(excluded.token_in, sessions.token_in),
-       token_out = COALESCE(excluded.token_out, sessions.token_out)`,
-  ).run(
-    session.sessionId,
-    session.account,
-    session.startedAt,
-    session.endedAt,
-    session.requestCount,
-    session.tokenIn,
-    session.tokenOut,
-  );
 }

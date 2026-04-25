@@ -1,27 +1,28 @@
 # Design Guidelines
 
-## Command Deck Dashboard
+## Terminal Account List
 
-- Keep all account names, quota values, errors, and controls in HTML.
-- Use the Three/R3F layer only as ambient depth. It must be `pointer-events: none`, non-blocking, and safe to remove.
-- Keep cards compact with 8px radius. Avoid nested cards.
-- Preserve visible keyboard focus on account cards, links, and mutation buttons.
-- Use inline confirmation for destructive actions; do not use browser confirm dialogs.
-- Long account names, emails, and errors must wrap without horizontal page scroll.
-- Respect reduced motion by disabling transform-heavy hover behavior.
-- Command deck CSS is split by concern: foundation, metric strip, account cards, telemetry, and activity/responsive rules.
+- Keep `cs ls` scan-friendly with three columns: account/type/email, 5h limit, weekly limit.
+- Use terminal block bars: `█` for quota left and `░` for quota used/unavailable.
+- Use rounded Unicode table borders for the default terminal table.
+- Auto-align columns by visible width and ignore ANSI color codes during width calculation.
+- Use a monochrome ink palette only: bold for emphasis, dim for secondary text and used/unavailable quota cells. Avoid colorful status or quota palettes.
+- Clamp quota percentages to 0-100% and round to whole numbers.
+- Render unknown quota as a fully shaded `░` bar with `--`.
+- Show re-auth and stale states as text. Do not invent quota values.
+- Keep `--json` output for machines; terminal formatting is for humans.
 
-## Color And Motion
+## Text And Status
 
-- Dark command surface uses multiple semantic tones, not a single-hue theme.
-- Use graphite/off-black surfaces with amber as the primary command accent; avoid blue/purple gradient dominance.
-- Healthy: green. Warning: yellow. Danger: red. Reauth: violet. Unknown: slate.
-- Use restrained shadows and perspective. Readability wins over depth effects.
-- Header typography uses local high-end system display stacks and fixed breakpoint sizes, not viewport-scaled text.
+- Active account marker is `*`.
+- Account names should be bold in supported terminals, with plan/email on the next line.
+- Quota cells should put the bar and percent on the first line, then reset text on the next line.
+- Terminal output should omit low-value metadata such as source and last-used when there is no stale/error state.
+- Stale and re-auth status text should render only when it requires user attention, inside the account column.
+- Do not print auth payloads, tokens, or raw vault file content.
 
-## Responsive Rules
+## Layout Rules
 
-- Desktop: account field plus selected telemetry panel.
-- Tablet/mobile: stack command strip, account field, telemetry, and activity.
-- Touch targets should be at least 40px high; prefer 44px where layout allows.
-- Mobile header navigation stacks full width under the title; no horizontal page scroll.
+- Use a text table for quota bars so accounts can be scanned row-by-row.
+- Keep each line short enough for typical terminals.
+- Use deterministic formatting so tests can assert exact bar output.

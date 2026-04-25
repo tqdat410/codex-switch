@@ -1,7 +1,6 @@
 import { Command } from 'commander';
 import { registerAddCommand } from './commands/add.js';
 import { registerCurrentCommand } from './commands/current.js';
-import { registerDashCommand } from './commands/dash.js';
 import { registerListCommand } from './commands/ls.js';
 import { registerRemoveCommand } from './commands/rm.js';
 import { registerRunCommand } from './commands/run.js';
@@ -24,7 +23,6 @@ registerAddCommand(program);
 registerRemoveCommand(program);
 registerListCommand(program);
 registerCurrentCommand(program);
-registerDashCommand(program);
 registerSyncCommand(program);
 
 program.action(async () => {

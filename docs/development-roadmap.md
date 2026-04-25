@@ -2,7 +2,7 @@
 
 ## Current Status Summary
 
-Implementation is materially complete for the planned v1 surface. Dashboard home now uses the full-account command deck surface. Remaining work is validation, live-account acceptance, packaging confidence, and publish readiness.
+The product scope is now CLI-only. Core account switching, TUI picker, and on-demand quota probing are implemented. The removed browser UI scope is superseded by terminal quota bars in `cs ls`.
 
 ## Phase Status
 
@@ -10,20 +10,19 @@ Implementation is materially complete for the planned v1 surface. Dashboard home
 | --- | --- | --- |
 | 1. Monorepo Setup | Completed | Workspace, packages, build/lint/typecheck wiring are in place. |
 | 2. Vault and Core CLI Swap | In Progress | Core flows are implemented; native live-account smoke is still manual. |
-| 3. TUI Picker and Quota Capture | Completed | Picker is implemented and quota now comes from on-demand backend probing instead of log parsing. |
-| 4. Dashboard Core | In Progress | Home page is a refined full-account command deck with local account controls, selected telemetry, activity preview, targeted quota polling, mobile-safe navigation, and ambient WebGL/CSS fallback. Live-account acceptance remains pending. |
-| 5. History Charts and OAuth Add | In Progress | Charts and add flow exist; real interaction smoke remains open. |
-| 6. Packaging and Distribution | In Progress | Build/prepack/tarball checks pass; install and publish readiness still need manual proof. |
+| 3. TUI Picker and Quota Capture | Completed | Picker is implemented and quota comes from on-demand backend probing. |
+| 4. Terminal Quota Visibility | Completed | `cs ls` shows deterministic 5h and 7d quota bars plus stale/reauth status. |
+| 5. Removed Browser UI Scope | Completed | The local browser UI package and command were removed from current product scope. |
+| 6. Packaging and Distribution | In Progress | CLI-only package and temp global install smoke pass on Windows; publish readiness still needs live-account and cross-platform proof. |
 
 ## Completed Scope
 
 - CLI command surface and TUI picker
 - vault snapshot storage and active auth swap
-- local SQLite schema and query layer
-- history ingestion helpers plus on-demand quota probing
-- local dashboard home/history/add pages
-- full-account command deck home page with accessible HTML account controls, telemetry, activity preview, and one decorative ambient 3D scene
-- standalone dashboard packaging
+- local SQLite schema and quota cache helpers
+- on-demand quota probing
+- terminal quota bars for account list output
+- CLI/shared-only package build path
 
 ## Validation Still Pending
 
@@ -31,17 +30,15 @@ Implementation is materially complete for the planned v1 surface. Dashboard home
 - live `cs use` / `cs run` smoke against real accounts
 - native Codex tool fidelity checks after switch
 - repeated swap durability testing
-- global install smoke on Windows and one non-Windows platform
+- global install smoke on one non-Windows platform
 
 ## Immediate Backlog
 
 1. Perform native end-to-end smoke with real Codex auth.
 2. Validate packaged install from tarball on another platform.
-3. Decide whether to suppress or isolate the Next NFT tracing warning.
-4. Add broader dashboard/API integration tests if the project continues beyond v1.
+3. Consider `cs quota [account]` only if `cs ls` lacks enough detail in real use.
 
 ## Risks and Dependencies
 
-- The project depends on Codex’s auth snapshot shape and the undocumented ChatGPT quota endpoint remaining usable.
-- Packaging confidence depends on standalone Next output continuing to tolerate local terminal spawn helpers.
+- The project depends on Codex's auth snapshot shape and the undocumented ChatGPT quota endpoint remaining usable.
 - Real publish should wait for live-account smoke, not just local unit/integration-style checks.

@@ -3,8 +3,8 @@
 ## Monorepo Boundaries
 
 - Keep shared filesystem paths, SQL schema, and cross-package types in `packages/shared`.
-- Keep auth mutation, vault writes, swapping, lock handling, and process launching in `packages/cli`.
-- Keep dashboard UI and local HTTP routes in `packages/dashboard`.
+- Keep auth mutation, vault writes, swapping, lock handling, process launching, and CLI display in `packages/cli`.
+- Do not reintroduce browser UI or local HTTP routes without a new plan.
 
 ## TypeScript and Module Rules
 
@@ -19,7 +19,6 @@
 - `pnpm typecheck`
 - `pnpm lint`
 - `pnpm test`
-- `pnpm inspect:codex-logs`
 
 Run validation after code edits that affect runtime behavior.
 
@@ -28,25 +27,15 @@ Run validation after code edits that affect runtime behavior.
 - Commands are registered in `packages/cli/src/index.ts`.
 - Mutating commands should flow through the same swap/vault helpers rather than duplicate auth logic.
 - Bare `cs` should remain a shortcut to the interactive picker.
-
-## Dashboard Conventions
-
-- App routes live under `packages/dashboard/app`.
-- Read-only database access stays in `packages/dashboard/lib/db.ts`.
-- Mutation routes should guard against cross-origin requests and call the CLI rather than reimplement auth changes inside the dashboard.
-- Keep the home command deck full-account: all vault accounts should be visible, while mutations continue through local dashboard API routes.
-- Prefer targeted `/api/usage?account=<name>` polling for the active or selected account. Use explicit user action for refresh-all.
-- Render ambient 2.5D depth with one shared client-only canvas. Canvas content is decorative and must not contain core data or controls.
-- Keep account names, quota numbers, reset text, action controls, and reauth errors in HTML for readability and accessibility.
-- Put pure quota mapping/layout logic in `packages/dashboard/lib` with unit tests.
-- Keep route files that read local vault state dynamic in production.
-- Keep command deck-specific styles in `packages/dashboard/app/command-deck.css`, imported after `globals.css`.
+- Keep `cs ls --json` stable for scripts.
+- Put deterministic terminal formatting in small helpers with focused tests.
+- Use ASCII for quota bars so output is width-stable across terminals.
 
 ## SQLite Rules
 
-- `state.sqlite` is the source of truth for dashboard reads.
-- Writes go through the CLI-side DB helpers.
-- Dashboard DB access must stay read-only with `query_only`.
+- `state.sqlite` is the source of truth for local account and quota state.
+- Writes go through CLI-side DB helpers.
+- Read-only paths should open SQLite with readonly/query-only options when practical.
 
 ## File Safety Rules
 
@@ -66,20 +55,15 @@ Run validation after code edits that affect runtime behavior.
 - `CODEX_SWITCH_VAULT_ROOT`
 - `CODEX_SWITCH_CODEX_BIN`
 - `CODEX_SWITCH_SKIP_LAUNCH`
-- `CODEX_SWITCH_NO_OPEN`
-- `CODEX_SWITCH_FORCE_DASH_BUILD`
 - `CODEX_SWITCH_QUOTA_TTL_MS`
-- `CODEX_SWITCH_POLL_DISABLED`
 - `CODEX_SWITCH_LOG_LEVEL`
-- `CS_CLI_ENTRY`
-- `CS_NODE_BINARY`
 
 ## Generated Artifact Policy
 
 - Publish bins from `bin/`.
 - Build CLI and shared packages into `dist/`.
-- Keep dashboard standalone output under `.next/standalone`.
-- `prepack` must rebuild and copy dashboard static/public assets into the standalone tree.
+- `prepack` must rebuild shared before CLI.
+- Package files should not include removed UI artifacts.
 
 ## Documentation Sync Rules
 
