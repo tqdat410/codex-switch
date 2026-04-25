@@ -28,8 +28,16 @@
 1. Bare `cs` reads `~/.codex-switch/config.json`.
 2. If automatic selection is on, it probes or reads cached quota for vault accounts and selects the best available account.
 3. If automatic selection is off, it opens the account picker.
-4. The selected account flows through the same swap-and-launch helper as `use`.
+4. The selected account flows through the same swap helper as `use`, then launches Codex.
 5. Raw arguments after `cs` are forwarded to the native `codex` binary.
+
+## Explicit Switch Flow
+
+1. `cs switch` syncs the current live auth back into the active vault entry when possible.
+2. It refreshes quota and selects the best available account.
+3. It copies the selected vault snapshot into `~/.codex/auth.json`.
+4. It records the active account and last-used timestamp.
+5. It does not launch the native `codex` binary.
 
 ## CLI Launch and Locking Flow
 
@@ -45,7 +53,7 @@
 - `auto`: enable, disable, or show automatic account selection.
 - `rm`: remove a vault account and related local state.
 - `status`: list accounts, active marker, metadata, quota bars, and stale/reauth status.
-- `current`: print the active account.
+- `switch`: automatically switch to the best account without launching Codex.
 - `sync`: persist the current live auth back to its active vault entry.
 - bare `cs`: smart-select an account and launch native Codex.
 

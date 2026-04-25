@@ -8,6 +8,8 @@
 - bare `cs` smart launch path that auto-selects an account before opening native Codex
 - `cs auto on|off|status` to control automatic account selection
 - `cs status` as the account/quota status command
+- `cs status --private` to hide email addresses in table output
+- `cs switch` to auto-select and switch accounts without launching Codex
 - formatter tests for healthy, partial, unavailable, stale, and re-auth list output
 - CLI-first packaging path for root global installs
 
@@ -23,6 +25,7 @@
 ### Removed
 
 - public `cs run` command
+- public `cs current` command
 - local browser UI package and launch command
 - browser UI dependencies and standalone package artifacts
 - stale dashboard screenshot/output artifacts

@@ -24,13 +24,18 @@ export interface ListDisplayRow extends AccountRecord {
   quotaError: QuotaErrorSummary | null;
 }
 
-export function formatListRows(rows: ListDisplayRow[]) {
-  return formatTable(rows.map(formatListRow));
+export interface FormatListRowsOptions {
+  private?: boolean;
 }
 
-function formatListRow(row: ListDisplayRow) {
+export function formatListRows(rows: ListDisplayRow[], options: FormatListRowsOptions = {}) {
+  return formatTable(rows.map((row) => formatListRow(row, options)));
+}
+
+function formatListRow(row: ListDisplayRow, options: FormatListRowsOptions) {
   const marker = row.isActive ? '*' : ' ';
-  const identity = [row.plan, row.email].filter(Boolean).join(' / ') || 'no plan/email';
+  const email = options.private && row.email ? 'email hidden' : row.email;
+  const identity = [row.plan, email].filter(Boolean).join(' / ') || 'no plan/email';
   const quota = row.latestQuota;
   const status = formatQuotaStatus(row);
   const account = [

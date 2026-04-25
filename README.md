@@ -45,11 +45,12 @@ cs exec --json "Say ok"
 cs                         Launch Codex with automatic account selection
 cs add --name <name>       Add a Codex account to the vault
 cs use <name> [args...]    Launch Codex with a specific account
+cs switch                  Switch to the best available account without launching Codex
 cs status [--refresh]      Show accounts and quota
+cs status --private        Show status table with email hidden
 cs status --json           Print machine-readable account status
 cs auto off                Use the manual account picker for bare cs
 cs auto on                 Re-enable automatic account selection
-cs current                 Show the active account
 cs sync                    Save current ~/.codex/auth.json back to the vault
 cs rm <name>               Remove an account from the vault
 ```
@@ -63,17 +64,23 @@ cs rm <name>               Remove an account from the vault
 - 5-hour and weekly quota bars
 - reset times, stale states, and re-auth warnings
 
+Use `cs status --private` to keep the table layout but hide email addresses. JSON output is unchanged and should be treated as machine-readable metadata.
+
 The terminal output uses `█` for quota left and dim `░` for used or unavailable quota. Unknown quota is shown as `--`.
 
 Example:
 
 ```text
-╭───────────────────────────────┬──────────────────────────────┬──────────────────────────────────────╮
-│ Account (1)                   │ 5h Limit                     │ Weekly Limit                         │
-├───────────────────────────────┼──────────────────────────────┼──────────────────────────────────────┤
-│ * personal                    │ [████████░░░░░░░░░░░░] 42%   │ [█████████████████░░░] 84%           │
-│ (Pro / user@example.com)      │ (resets 16:52)               │ (resets 13:04 on 29 Apr)             │
-╰───────────────────────────────┴──────────────────────────────┴──────────────────────────────────────╯
+╭────────────────────────────────┬──────────────────────────────┬──────────────────────────────────────╮
+│ Account (3)                    │ 5h Limit                     │ Weekly Limit                         │
+├────────────────────────────────┼──────────────────────────────┼──────────────────────────────────────┤
+│ * personal                     │ [████████░░░░░░░░░░░░] 42%   │ [█████████████████░░░] 84%           │
+│ (Pro / personal@example.com)   │ (resets 16:52)               │ (resets 13:04 on 29 Apr)             │
+│   work                         │ [██████████████████░░] 91%   │ [████████████░░░░░░░░] 61%           │
+│ (Team / work@example.com)      │ (resets 18:10)               │ (resets 09:30 on 30 Apr)             │
+│   backup                       │ [██████████████░░░░░░] 68%   │ [█████████░░░░░░░░░░░] 47%           │
+│ (Plus / backup@example.com)    │ (resets 20:45)               │ (resets 11:15 on 1 May)              │
+╰────────────────────────────────┴──────────────────────────────┴──────────────────────────────────────╯
 ```
 
 ## Storage

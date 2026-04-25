@@ -1,9 +1,9 @@
 import { Command } from 'commander';
 import { registerAddCommand } from './commands/add.js';
 import { registerAutoCommand } from './commands/auto.js';
-import { registerCurrentCommand } from './commands/current.js';
 import { registerRemoveCommand } from './commands/rm.js';
 import { registerStatusCommand } from './commands/status.js';
+import { registerSwitchCommand } from './commands/switch.js';
 import { registerSyncCommand } from './commands/sync.js';
 import { registerUseCommand } from './commands/use.js';
 import { launchDefault } from './core/default-launch.js';
@@ -23,7 +23,7 @@ registerAddCommand(program);
 registerAutoCommand(program);
 registerRemoveCommand(program);
 registerStatusCommand(program);
-registerCurrentCommand(program);
+registerSwitchCommand(program);
 registerSyncCommand(program);
 
 await (shouldUseDefaultLaunch(args)

@@ -48,6 +48,27 @@ test('formatListRows renders healthy probe rows', () => {
   assert.doesNotMatch(cleanOutput, /last used/);
 });
 
+test('formatListRows can hide email addresses for private terminal output', () => {
+  const output = formatListRows(
+    [
+      row({
+        quotaReason: 'probed',
+        latestQuota: quota({
+          fiveHourPercent: 42,
+          weeklyPercent: 84,
+        }),
+      }),
+    ],
+    { private: true },
+  );
+  const cleanOutput = stripAnsi(output);
+
+  assert.doesNotMatch(cleanOutput, /user@example\.com/);
+  assert.match(cleanOutput, /\(Pro \/ email hidden\)/);
+  assert.match(cleanOutput, /\* personal/);
+  assert.match(cleanOutput, /│ \[████████░{12}\] 42%\s+│/);
+});
+
 test('formatListRows renders partial and stale cache rows', () => {
   const output = formatListRows([
     row({

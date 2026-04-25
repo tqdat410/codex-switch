@@ -12,6 +12,15 @@ import {
 } from './vault.js';
 
 export async function useAccount(name: string, codexArgs: string[]) {
+  const { exitCode } = await activateAccount(name, { codexArgs });
+  return exitCode;
+}
+
+export async function switchAccount(name: string) {
+  await activateAccount(name);
+}
+
+async function activateAccount(name: string, options: { codexArgs?: string[] } = {}) {
   await ensureVaultSetup();
 
   const releaseLock = await acquireSessionLock(name);
@@ -42,13 +51,13 @@ export async function useAccount(name: string, codexArgs: string[]) {
     setActiveAccount(db, name);
     touchAccountLastUsed(db, name);
 
-    const exitCode = await launchCodex(codexArgs);
+    const exitCode = options.codexArgs ? await launchCodex(options.codexArgs) : 0;
 
-    if (await fileExists(authFile())) {
+    if (options.codexArgs && (await fileExists(authFile()))) {
       await syncCurrentAuthToVault(name);
     }
 
-    return exitCode;
+    return { exitCode };
   } finally {
     db.close();
     await releaseLock();

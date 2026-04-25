@@ -11,7 +11,7 @@
 ## Package Summary
 
 - `@codex-switch/shared`: exports path helpers for `~/.codex` and `~/.codex-switch`, plus SQLite schema and shared runtime types.
-- `@codex-switch/cli`: owns account add/use/sync/remove/current/status/auto flows, default smart launch routing, session locking, atomic writes, quota cache/probe orchestration, and terminal quota formatting.
+- `@codex-switch/cli`: owns account add/use/sync/remove/status/switch/auto flows, default smart launch routing, session locking, atomic writes, quota cache/probe orchestration, and terminal quota formatting.
 
 ## Primary Commands
 

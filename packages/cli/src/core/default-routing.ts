@@ -7,6 +7,7 @@ const CODEX_SWITCH_COMMANDS = new Set([
   'remove',
   'status',
   'sync',
+  'switch',
   'use',
 ]);
 

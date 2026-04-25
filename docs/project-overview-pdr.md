@@ -22,10 +22,12 @@
 
 1. `cs add --name <name>` opens `codex login` in a temporary `CODEX_HOME`, then stores the resulting auth snapshot in the vault.
 2. `cs use <name>` syncs the current active auth back into the vault, swaps the target snapshot into `~/.codex/auth.json`, and launches Codex.
-3. Bare `cs ...` auto-selects the best available account, forwards the raw arguments to native Codex, and launches Codex.
-4. `cs auto off` disables automatic selection so bare `cs` opens the account picker.
-5. `cs status` lists vault accounts with compact 5h and 7d quota bars.
-6. `cs status --refresh` probes quota before printing; `cs status --json` keeps machine-readable output.
+3. `cs switch` auto-selects the best available account, swaps auth, and exits without opening Codex.
+4. Bare `cs ...` auto-selects the best available account, forwards the raw arguments to native Codex, and launches Codex.
+5. `cs auto off` disables automatic selection so bare `cs` opens the account picker.
+6. `cs status` lists vault accounts with compact 5h and 7d quota bars.
+7. `cs status --private` hides email addresses in the table output.
+8. `cs status --refresh` probes quota before printing; `cs status --json` keeps machine-readable output.
 
 ## Implemented Feature Scope
 
@@ -34,7 +36,7 @@
 - `rm`
 - `status`
 - `auto`
-- `current`
+- `switch`
 - `sync`
 - bare `cs` smart launcher
 
@@ -81,12 +83,14 @@
 - CLI command surface is callable from built artifacts.
 - `cs --help` has no removed commands.
 - `cs status` renders 5h and 7d quota bars.
+- `cs status --private` hides email addresses in table output.
+- `cs switch` swaps auth without launching Codex.
 - Packed install exposes working `cs`/`codex-switch` bins.
 - Packed artifacts contain no removed UI files.
 
 ## Known Limitations
 
-- Native smoke for real `add`, `use`, and bare `cs` against live Codex auth is still manual.
+- Native smoke for real `add`, `use`, `switch`, and bare `cs` against live Codex auth is still manual.
 - Cross-platform global-install validation is not complete.
 - Quota uses undocumented ChatGPT backend endpoints and may need a fallback patch if OpenAI changes them.
 

@@ -12,5 +12,7 @@ test('keeps codex-switch commands inside commander', () => {
   assert.equal(shouldUseDefaultLaunch(['status', '--json']), false);
   assert.equal(shouldUseDefaultLaunch(['auto', 'off']), false);
   assert.equal(shouldUseDefaultLaunch(['use', 'personal']), false);
+  assert.equal(shouldUseDefaultLaunch(['switch']), false);
+  assert.equal(shouldUseDefaultLaunch(['current']), false);
   assert.equal(shouldUseDefaultLaunch(['--help']), false);
 });

@@ -12,8 +12,13 @@ export function registerStatusCommand(program: Command) {
     .command('status')
     .description('Show vault accounts and cached quota.')
     .option('--json', 'print JSON output')
+    .option('--private', 'hide email addresses in terminal table output')
     .option('--refresh', 'refresh quota before printing')
-    .action(async (options: { json?: boolean; refresh?: boolean }) => {
+    .action(async (options: { json?: boolean; private?: boolean; refresh?: boolean }) => {
+      if (options.json && options.private) {
+        throw new Error('`cs status --private` is only supported for table output.');
+      }
+
       const db = openStateDatabase();
 
       try {
@@ -45,7 +50,7 @@ export function registerStatusCommand(program: Command) {
           return;
         }
 
-        console.log(formatListRows(rows));
+        console.log(formatListRows(rows, { private: options.private ?? false }));
       } finally {
         db.close();
       }
