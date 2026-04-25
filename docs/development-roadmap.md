@@ -11,7 +11,7 @@ Implementation is materially complete for the planned v1 surface. Dashboard home
 | 1. Monorepo Setup | Completed | Workspace, packages, build/lint/typecheck wiring are in place. |
 | 2. Vault and Core CLI Swap | In Progress | Core flows are implemented; native live-account smoke is still manual. |
 | 3. TUI Picker and Quota Capture | Completed | Picker is implemented and quota now comes from on-demand backend probing instead of log parsing. |
-| 4. Dashboard Core | In Progress | Home page has been redesigned as a full-account command deck with local account controls, selected telemetry, activity preview, targeted quota polling, and ambient WebGL/CSS fallback. Final validation pending. |
+| 4. Dashboard Core | In Progress | Home page is a refined full-account command deck with local account controls, selected telemetry, activity preview, targeted quota polling, mobile-safe navigation, and ambient WebGL/CSS fallback. Live-account acceptance remains pending. |
 | 5. History Charts and OAuth Add | In Progress | Charts and add flow exist; real interaction smoke remains open. |
 | 6. Packaging and Distribution | In Progress | Build/prepack/tarball checks pass; install and publish readiness still need manual proof. |
 

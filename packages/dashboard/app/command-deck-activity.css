@@ -1,0 +1,142 @@
+.command-deck-activity {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 41%);
+  gap: 18px;
+  border: 1px solid var(--deck-line);
+  border-radius: 8px;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.055), transparent 46%),
+    var(--deck-surface);
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.2), inset 0 1px rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(18px);
+  padding: 16px;
+}
+
+.command-deck-section-title h2 {
+  color: var(--deck-text);
+  font-size: 18px;
+  font-weight: 740;
+}
+
+.command-deck-section-title a {
+  min-height: 34px;
+  padding: 7px 10px;
+}
+
+.command-deck-activity ul {
+  display: grid;
+  gap: 0;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.command-deck-activity li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 12px;
+  border-top: 1px solid rgba(214, 226, 240, 0.1);
+  padding: 11px 0;
+}
+
+.command-deck-activity li span,
+.command-deck-activity li small {
+  overflow-wrap: anywhere;
+}
+
+.command-deck-activity li strong {
+  color: var(--deck-accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.command-deck-activity li small {
+  grid-column: 1 / -1;
+  color: var(--deck-muted);
+}
+
+.command-deck-chart {
+  height: 224px;
+  min-width: 0;
+  margin-top: 12px;
+}
+
+@media (max-width: 1180px) {
+  .command-deck-strip {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .command-deck-strip__actions {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 980px) {
+  .command-shell__header,
+  .command-deck__grid,
+  .command-deck-activity {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .command-shell__header {
+    align-items: stretch;
+  }
+
+  .command-shell__header h1 {
+    font-size: 3.25rem;
+  }
+
+  .command-deck-panel {
+    position: static;
+  }
+}
+
+@media (max-width: 640px) {
+  .command-shell {
+    border-radius: 18px;
+    padding: 16px;
+  }
+
+  .command-shell__header h1 {
+    max-width: 8.3ch;
+    font-size: 2.7rem;
+  }
+
+  .command-shell__header nav,
+  .command-deck-strip,
+  .command-deck-strip__actions,
+  .command-deck-account-field {
+    grid-template-columns: 1fr;
+  }
+
+  .command-shell__header nav {
+    display: grid;
+  }
+
+  .command-deck-telemetry div {
+    grid-template-columns: 1fr;
+  }
+
+  .command-deck-strip__actions > * {
+    width: 100%;
+  }
+}
+
+@media (max-width: 420px) {
+  .command-shell__header h1 {
+    font-size: 2.35rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .command-deck-account,
+  .command-deck-account:hover,
+  .command-deck button,
+  .command-deck a,
+  .command-shell__header a {
+    transform: none;
+    transition: none;
+  }
+}

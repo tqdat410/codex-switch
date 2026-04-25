@@ -24,7 +24,7 @@ export function CommandDeckCommandStrip({
         <button type="button" disabled={busy} onClick={onRefreshAll}>
           {busy ? 'Refreshing...' : 'Refresh all'}
         </button>
-        <Link href="/add">Add Account</Link>
+        <Link href="/add">Add account</Link>
         <Link href="/history">History</Link>
       </div>
     </section>

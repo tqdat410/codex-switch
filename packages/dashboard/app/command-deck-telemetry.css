@@ -1,0 +1,105 @@
+.command-deck-panel,
+.command-deck-empty-panel {
+  border: 1px solid var(--deck-line);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.055), transparent 72%),
+    var(--deck-surface);
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.22), inset 0 1px rgba(255, 255, 255, 0.08);
+  padding: 16px;
+  backdrop-filter: blur(18px);
+}
+
+.command-deck-panel {
+  position: sticky;
+  top: 20px;
+}
+
+.command-deck-panel__header,
+.command-deck-section-title {
+  display: flex;
+  gap: 12px;
+  align-items: start;
+  justify-content: space-between;
+}
+
+.command-deck-panel__header p,
+.command-deck-section-title h2 {
+  margin: 0;
+}
+
+.command-deck-panel__header h2 {
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
+  color: var(--deck-text);
+  font-size: 24px;
+  font-weight: 740;
+  line-height: 1.1;
+}
+
+.command-deck-panel__header span {
+  border: 1px solid var(--deck-line);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.045);
+  color: #d8e1ee;
+  font-size: 12px;
+  font-weight: 680;
+  padding: 4px 7px;
+}
+
+.command-deck-panel__header span[data-tone='healthy'] { color: #d8ffeb; }
+.command-deck-panel__header span[data-tone='warn'] { color: #fff0b9; }
+.command-deck-panel__header span[data-tone='danger'] { color: #ffd4d4; }
+.command-deck-panel__header span[data-tone='reauth'] { color: #e4dcff; }
+
+.command-deck-telemetry {
+  display: grid;
+  gap: 0;
+  margin-top: 16px;
+  border-top: 1px solid var(--deck-line);
+}
+
+.command-deck-telemetry div {
+  display: grid;
+  grid-template-columns: 118px minmax(0, 1fr);
+  gap: 12px;
+  border-bottom: 1px solid rgba(214, 226, 240, 0.09);
+  padding: 10px 0;
+}
+
+.command-deck-telemetry dt {
+  overflow-wrap: anywhere;
+  color: var(--deck-muted);
+  font-size: 13px;
+}
+
+.command-deck-telemetry dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: var(--deck-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.command-deck-panel__actions,
+.command-deck-panel__confirm {
+  margin-top: 12px;
+}
+
+.command-deck-panel__actions button:first-child {
+  border-color: rgba(98, 217, 163, 0.44);
+  color: #d8ffeb;
+}
+
+.command-deck-panel__actions button:last-child,
+.command-deck-panel__confirm button:first-of-type {
+  border-color: rgba(255, 107, 107, 0.44);
+  color: #ffd4d4;
+}
+
+.command-deck-panel__confirm {
+  align-items: center;
+  border: 1px solid rgba(255, 107, 107, 0.42);
+  border-radius: 8px;
+  background: rgba(74, 19, 22, 0.62);
+  padding: 10px;
+}

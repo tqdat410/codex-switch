@@ -33,7 +33,7 @@ function DeckBackdrop({ selectedTone }: Readonly<{ selectedTone: QuotaTone }>) {
     <group rotation={[0.2, -0.22, 0]}>
       <mesh position={[0, 0, -1.2]}>
         <boxGeometry args={[8.8, 5.2, 0.08]} />
-        <meshStandardMaterial color="#132033" roughness={0.75} metalness={0.1} transparent opacity={0.6} />
+        <meshStandardMaterial color="#111821" roughness={0.78} metalness={0.12} transparent opacity={0.6} />
       </mesh>
       <mesh position={[0.3, -0.2, -0.8]}>
         <boxGeometry args={[7.2, 3.7, 0.08]} />
@@ -61,7 +61,7 @@ function MetricRails({
           <mesh key={index} position={[x, isActive ? 0.22 : 0, isActive ? 0.3 : 0]}>
             <boxGeometry args={[0.34, isActive ? 0.9 : 0.5, 0.18]} />
             <meshStandardMaterial
-              color={isActive ? toneColor(selectedTone) : '#30445f'}
+              color={isActive ? toneColor(selectedTone) : '#2c3748'}
               roughness={0.5}
               metalness={0.15}
             />
@@ -75,14 +75,14 @@ function MetricRails({
 function toneColor(tone: QuotaTone) {
   switch (tone) {
     case 'danger':
-      return '#fb7185';
+      return '#ff6b6b';
     case 'warn':
-      return '#facc15';
+      return '#f0c44c';
     case 'reauth':
-      return '#c4b5fd';
+      return '#b8a4ff';
     case 'healthy':
-      return '#6ee7b7';
+      return '#62d9a3';
     default:
-      return '#93c5fd';
+      return '#f6b73c';
   }
 }

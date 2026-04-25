@@ -19,7 +19,7 @@ export function AppShell({
     <main
       className={
         isCommand
-          ? 'mx-auto min-h-screen max-w-7xl px-4 py-6 sm:px-6 lg:px-8'
+          ? 'command-page mx-auto min-h-[100dvh] max-w-7xl px-4 py-6 sm:px-6 lg:px-8'
           : 'mx-auto min-h-screen max-w-6xl px-5 py-8 sm:px-8'
       }
     >
@@ -52,7 +52,7 @@ export function AppShell({
             <nav className="flex flex-wrap gap-3">
               <NavLink href="/">Home</NavLink>
               <NavLink href="/history">History</NavLink>
-              <NavLink href="/add">Add Account</NavLink>
+              <NavLink href="/add">Add account</NavLink>
             </nav>
           )}
         </div>

@@ -14,8 +14,8 @@ export default function HomePage() {
 
   return (
     <AppShell
-      title="Codex Switch Command Deck"
-      description="Full-account vault control, quota telemetry, and recent activity for local Codex account switching."
+      title="Command Deck"
+      description="Vault control, quota telemetry, and session history for local Codex account switching."
       variant="command"
     >
       <CommandDeckDashboard

@@ -17,6 +17,8 @@
 - home page keeps selected-account refresh plus explicit refresh-all for cached quota data
 - selected-account telemetry carries focused quota/status details while every vault account remains visible
 - add/history entry points and switch/remove controls remain available from the command deck home
+- command deck visual system now uses a darker operations-console shell, amber command accent, stronger typography hierarchy, and stacked mobile navigation
+- command deck styles are split into focused files for foundation, metric strip, accounts, telemetry, and activity/responsive rules
 - dashboard build config transpiles `three`
 - previous narrowed dashboard scope has been superseded by the full-account command deck
 
@@ -36,6 +38,7 @@
 - `pnpm lint`
 - `pnpm build`
 - desktop/mobile browser smoke with seeded fake account data
+- desktop/mobile Chrome headless smoke confirms no horizontal overflow at 390px and 1440px
 - forced WebGL fallback smoke
 - production desktop/mobile/fallback smoke with seeded active and inactive account data
 
