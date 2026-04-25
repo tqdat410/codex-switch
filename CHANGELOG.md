@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.10
+
+- Added `cs switch` to auto-select and switch accounts without launching Codex.
+- Added `cs status --private` to hide email addresses in table output.
+- Removed the public `cs current` command.
+
 ## 1.0.9
 
 - Changed bare `cs` into the smart native Codex launcher with automatic account selection.
