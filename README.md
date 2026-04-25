@@ -6,11 +6,11 @@ It does not proxy API traffic and it does not split `~/.codex/` into per-account
 
 ## What ships
 
-- `cs` / `codex-switch`: CLI wrapper for add, use, run, sync, remove, current, and list
-- bare `cs` TUI account picker
+- `cs` / `codex-switch`: CLI wrapper for add, use, status, sync, remove, and current
+- bare `cs` smart launcher that selects an account, swaps auth, and opens native Codex
 - local SQLite state at `~/.codex-switch/state.sqlite`
 - on-demand quota probing with a 2-minute cache
-- terminal quota bars in `cs ls`
+- terminal quota bars in `cs status`
 
 ## Requirements
 
@@ -39,22 +39,28 @@ Use an account:
 pnpm --filter @codex-switch/cli exec node dist/index.js use personal
 ```
 
+Launch native Codex with automatic account selection:
+
+```bash
+pnpm --filter @codex-switch/cli exec node dist/index.js
+```
+
 List accounts and cached quota:
 
 ```bash
-pnpm --filter @codex-switch/cli exec node dist/index.js ls
+pnpm --filter @codex-switch/cli exec node dist/index.js status
 ```
 
 Force-refresh cached quota:
 
 ```bash
-pnpm --filter @codex-switch/cli exec node dist/index.js ls --refresh
+pnpm --filter @codex-switch/cli exec node dist/index.js status --refresh
 ```
 
 Machine-readable list output:
 
 ```bash
-pnpm --filter @codex-switch/cli exec node dist/index.js ls --json
+pnpm --filter @codex-switch/cli exec node dist/index.js status --json
 ```
 
 ## Global install flow
@@ -65,12 +71,12 @@ After packaging, the intended user flow is:
 npm i -g @tqdat410/codex-switch
 cs add --name personal
 cs use personal
-cs ls --refresh
+cs status --refresh
 ```
 
 ## Quota Display
 
-`cs ls` prints a three-column quota table:
+`cs status` prints a three-column quota table:
 
 ```text
 ╭───────────────────────────────┬──────────────────────────────┬──────────────────────────────────────╮
@@ -83,18 +89,23 @@ cs ls --refresh
 
 The display uses a monochrome ink palette: bold for emphasis and dim text for secondary/used quota cells. Columns are auto-aligned by visible terminal width, ignoring ANSI style codes. Bars clamp to 0-100%; `█` means quota left and `░` means quota used/unavailable. Unknown quota renders as a fully shaded bar with `--`. Re-auth and stale states are shown in the account cell instead of fake quota.
 
-## Recommended shell aliases
+## Smart Launch
 
-PowerShell:
+Bare `cs` is the default launcher. It auto-selects the best available account using cached/probed quota, swaps that snapshot into `~/.codex/auth.json`, and then launches the native `codex` binary.
 
-```powershell
-function codex { cs run @Args }
-```
-
-Bash / zsh:
+Codex flags are forwarded as-is:
 
 ```bash
-alias codex='cs run'
+cs --model gpt-5.5
+cs exec --json "Say ok"
+```
+
+Turn automatic selection off to use the account picker instead:
+
+```bash
+cs auto off
+cs auto on
+cs auto status
 ```
 
 ## Vault layout
@@ -118,6 +129,6 @@ alias codex='cs run'
 - `No active account recorded`:
   Add or use an account first.
 - `Close the running Codex session first`:
-  Another `cs use` / `cs run` process still owns the runtime lock.
+  Another `cs` / `cs use` process still owns the runtime lock.
 - No quota data yet:
-  Quota is fetched on demand from ChatGPT when `cs ls --refresh` asks for it. If refresh fails, the CLI shows the last cached value or a re-auth status.
+  Quota is fetched on demand from ChatGPT when `cs status --refresh` asks for it. If refresh fails, the CLI shows the last cached value or a re-auth status.

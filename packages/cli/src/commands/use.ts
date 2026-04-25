@@ -8,6 +8,7 @@ export function registerUseCommand(program: Command) {
     .description('Switch to an account, then launch Codex.')
     .argument('<name>', 'vault account name')
     .argument('[codexArgs...]', 'args forwarded to codex')
+    .allowUnknownOption(true)
     .action(async (rawName: string, codexArgs: string[]) => {
       const name = parseAccountName(rawName);
       process.exitCode = await useAccount(name, codexArgs);

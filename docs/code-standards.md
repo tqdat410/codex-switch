@@ -26,8 +26,8 @@ Run validation after code edits that affect runtime behavior.
 
 - Commands are registered in `packages/cli/src/index.ts`.
 - Mutating commands should flow through the same swap/vault helpers rather than duplicate auth logic.
-- Bare `cs` should remain a shortcut to the interactive picker.
-- Keep `cs ls --json` stable for scripts.
+- Bare `cs` should remain the native Codex launcher and forward unknown args to Codex.
+- Keep `cs status --json` stable for scripts.
 - Put deterministic terminal formatting in small helpers with focused tests.
 - Use ASCII for quota bars so output is width-stable across terminals.
 
