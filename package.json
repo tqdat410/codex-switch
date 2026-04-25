@@ -12,9 +12,9 @@
   ],
   "scripts": {
     "build": "pnpm -r build",
-    "typecheck": "pnpm -r typecheck",
+    "typecheck": "pnpm --filter @codex-switch/shared build && pnpm -r typecheck",
     "lint": "pnpm exec eslint .",
-    "test": "pnpm --filter @codex-switch/shared test && pnpm --filter @codex-switch/cli test",
+    "test": "pnpm --filter @codex-switch/shared build && pnpm --filter @codex-switch/shared test && pnpm --filter @codex-switch/cli test",
     "dev:cli": "pnpm --filter @codex-switch/cli dev",
     "prepack": "node ./scripts/prepack.mjs"
   },
