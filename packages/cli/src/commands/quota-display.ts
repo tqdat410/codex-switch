@@ -34,7 +34,7 @@ export function formatListRows(rows: ListDisplayRow[], options: FormatListRowsOp
 
 function formatListRow(row: ListDisplayRow, options: FormatListRowsOptions) {
   const marker = row.isActive ? '*' : ' ';
-  const email = options.private && row.email ? 'email hidden' : row.email;
+  const email = options.private && row.email ? maskPrivateEmail(row.email) : row.email;
   const identity = [row.plan, email].filter(Boolean).join(' / ') || 'no plan/email';
   const quota = row.latestQuota;
   const status = formatQuotaStatus(row);
@@ -51,6 +51,10 @@ function formatListRow(row: ListDisplayRow, options: FormatListRowsOptions) {
     formatQuotaLimit(quota?.fiveHourPercent ?? null, quota?.fiveHourResetAt ?? null),
     formatQuotaLimit(quota?.weeklyPercent ?? null, quota?.weeklyResetAt ?? null),
   ];
+}
+
+function maskPrivateEmail(email: string) {
+  return [...email].map((character) => (character === '@' ? character : EMPTY_BAR_CELL)).join('');
 }
 
 export function formatQuotaBar(label: string, percent: number | null) {

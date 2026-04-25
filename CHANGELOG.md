@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.11
+
+- Changed `cs status --private` to mask email characters with `░` while preserving `@`.
+
 ## 1.0.10
 
 - Added `cs switch` to auto-select and switch accounts without launching Codex.

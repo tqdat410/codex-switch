@@ -12,7 +12,7 @@ export function registerStatusCommand(program: Command) {
     .command('status')
     .description('Show vault accounts and cached quota.')
     .option('--json', 'print JSON output')
-    .option('--private', 'hide email addresses in terminal table output')
+    .option('--private', 'mask email addresses in terminal table output')
     .option('--refresh', 'refresh quota before printing')
     .action(async (options: { json?: boolean; private?: boolean; refresh?: boolean }) => {
       if (options.json && options.private) {

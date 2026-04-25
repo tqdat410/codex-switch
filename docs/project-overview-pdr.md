@@ -26,7 +26,7 @@
 4. Bare `cs ...` auto-selects the best available account, forwards the raw arguments to native Codex, and launches Codex.
 5. `cs auto off` disables automatic selection so bare `cs` opens the account picker.
 6. `cs status` lists vault accounts with compact 5h and 7d quota bars.
-7. `cs status --private` hides email addresses in the table output.
+7. `cs status --private` masks email addresses in the table output.
 8. `cs status --refresh` probes quota before printing; `cs status --json` keeps machine-readable output.
 
 ## Implemented Feature Scope
@@ -83,7 +83,7 @@
 - CLI command surface is callable from built artifacts.
 - `cs --help` has no removed commands.
 - `cs status` renders 5h and 7d quota bars.
-- `cs status --private` hides email addresses in table output.
+- `cs status --private` masks email addresses in table output.
 - `cs switch` swaps auth without launching Codex.
 - Packed install exposes working `cs`/`codex-switch` bins.
 - Packed artifacts contain no removed UI files.

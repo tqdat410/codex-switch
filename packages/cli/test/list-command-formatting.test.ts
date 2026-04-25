@@ -48,7 +48,7 @@ test('formatListRows renders healthy probe rows', () => {
   assert.doesNotMatch(cleanOutput, /last used/);
 });
 
-test('formatListRows can hide email addresses for private terminal output', () => {
+test('formatListRows masks email addresses for private terminal output', () => {
   const output = formatListRows(
     [
       row({
@@ -64,7 +64,7 @@ test('formatListRows can hide email addresses for private terminal output', () =
   const cleanOutput = stripAnsi(output);
 
   assert.doesNotMatch(cleanOutput, /user@example\.com/);
-  assert.match(cleanOutput, /\(Pro \/ email hidden\)/);
+  assert.match(cleanOutput, /\(Pro \/ ░░░░@░░░░░░░░░░░\)/);
   assert.match(cleanOutput, /\* personal/);
   assert.match(cleanOutput, /│ \[████████░{12}\] 42%\s+│/);
 });

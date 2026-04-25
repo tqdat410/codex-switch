@@ -47,7 +47,7 @@ cs add --name <name>       Add a Codex account to the vault
 cs use <name> [args...]    Launch Codex with a specific account
 cs switch                  Switch to the best available account without launching Codex
 cs status [--refresh]      Show accounts and quota
-cs status --private        Show status table with email hidden
+cs status --private        Show status table with email masked
 cs status --json           Print machine-readable account status
 cs auto off                Use the manual account picker for bare cs
 cs auto on                 Re-enable automatic account selection
@@ -64,7 +64,7 @@ cs rm <name>               Remove an account from the vault
 - 5-hour and weekly quota bars
 - reset times, stale states, and re-auth warnings
 
-Use `cs status --private` to keep the table layout but hide email addresses. JSON output is unchanged and should be treated as machine-readable metadata.
+Use `cs status --private` to keep the table layout but mask email addresses with `░`, preserving only `@`. JSON output is unchanged and should be treated as machine-readable metadata.
 
 The terminal output uses `█` for quota left and dim `░` for used or unavailable quota. Unknown quota is shown as `--`.
 
