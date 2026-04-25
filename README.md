@@ -65,6 +65,15 @@ cs rm <name>               Remove an account from the vault
 
 The terminal output uses `█` for quota left and dim `░` for used or unavailable quota. Unknown quota is shown as `--`.
 
+Example:
+
+```text
+Account: * personal
+Plan:    Pro / user@example.com
+5h:      [████████░░░░░░░░░░░░] 42% (resets 16:52)
+Weekly:  [█████████████████░░░] 84% (resets 13:04 on 29 Apr)
+```
+
 ## Storage
 
 ```text
