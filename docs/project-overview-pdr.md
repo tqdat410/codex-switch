@@ -22,21 +22,21 @@
 
 1. `cs add --name <name>` opens `codex login` in a temporary `CODEX_HOME`, then stores the resulting auth snapshot in the vault.
 2. `cs use <name>` syncs the current active auth back into the vault, swaps the target snapshot into `~/.codex/auth.json`, and launches Codex.
-3. `cs run ...` reuses the same swap-and-launch path for shell aliases such as `alias codex='cs run'`.
-4. `cs` with no subcommand opens a TUI picker with account and cached quota context.
-5. `cs ls` lists vault accounts with compact 5h and 7d quota bars.
-6. `cs ls --refresh` probes quota before printing; `cs ls --json` keeps machine-readable output.
+3. Bare `cs ...` auto-selects the best available account, forwards the raw arguments to native Codex, and launches Codex.
+4. `cs auto off` disables automatic selection so bare `cs` opens the account picker.
+5. `cs status` lists vault accounts with compact 5h and 7d quota bars.
+6. `cs status --refresh` probes quota before printing; `cs status --json` keeps machine-readable output.
 
 ## Implemented Feature Scope
 
 - `add`
 - `use`
-- `run`
 - `rm`
-- `ls`
+- `status`
+- `auto`
 - `current`
 - `sync`
-- bare `cs` TUI picker
+- bare `cs` smart launcher
 
 ## Functional Requirements
 
@@ -80,13 +80,13 @@
 - `pnpm build`, `pnpm typecheck`, `pnpm lint`, and `pnpm test` pass locally, or unrelated failures are documented.
 - CLI command surface is callable from built artifacts.
 - `cs --help` has no removed commands.
-- `cs ls` renders 5h and 7d quota bars.
+- `cs status` renders 5h and 7d quota bars.
 - Packed install exposes working `cs`/`codex-switch` bins.
 - Packed artifacts contain no removed UI files.
 
 ## Known Limitations
 
-- Native smoke for real `add`, `use`, and `run` against live Codex auth is still manual.
+- Native smoke for real `add`, `use`, and bare `cs` against live Codex auth is still manual.
 - Cross-platform global-install validation is not complete.
 - Quota uses undocumented ChatGPT backend endpoints and may need a fallback patch if OpenAI changes them.
 
@@ -94,4 +94,4 @@
 
 - Cross-platform install smoke on a non-Windows platform.
 - End-to-end native Codex fidelity smoke.
-- Optional `cs quota [account]` if users need more detail than `cs ls`.
+- Optional `cs quota [account]` if users need more detail than `cs status`.

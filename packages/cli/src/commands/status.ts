@@ -7,10 +7,10 @@ import {
 } from '../core/quota-orchestrator.js';
 import { formatListRows, type ListDisplayRow } from './quota-display.js';
 
-export function registerListCommand(program: Command) {
+export function registerStatusCommand(program: Command) {
   program
-    .command('ls')
-    .description('List vault accounts.')
+    .command('status')
+    .description('Show vault accounts and cached quota.')
     .option('--json', 'print JSON output')
     .option('--refresh', 'refresh quota before printing')
     .action(async (options: { json?: boolean; refresh?: boolean }) => {
