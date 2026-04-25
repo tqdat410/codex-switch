@@ -3,12 +3,12 @@
 ## Terminal Account Status
 
 - Keep `cs status` scan-friendly with three columns: account/type/email, 5h limit, weekly limit.
-- Use terminal block bars: `█` for quota left and `░` for quota used/unavailable.
+- Use terminal quota bars: `█` for quota left and dim `·` for quota used/unavailable.
 - Use rounded Unicode table borders for the default terminal table.
 - Auto-align columns by visible width and ignore ANSI color codes during width calculation.
 - Use a monochrome ink palette only: bold for emphasis, dim for secondary text and used/unavailable quota cells. Avoid colorful status or quota palettes.
 - Clamp quota percentages to 0-100% and round to whole numbers.
-- Render unknown quota as a fully shaded `░` bar with `--`.
+- Render unknown quota as a dim `·` bar with `--`.
 - Show re-auth and stale states as text. Do not invent quota values.
 - Keep `--json` output for machines; terminal formatting is for humans.
 

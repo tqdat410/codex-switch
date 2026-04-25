@@ -7,7 +7,7 @@ import type {
 import type { FetchQuotaReason } from '../core/quota-orchestrator.js';
 
 const BAR_WIDTH = 20;
-const EMPTY_BAR_CELL = '░';
+const EMPTY_BAR_CELL = '·';
 const FILLED_BAR_CELL = '█';
 const ANSI_BOLD = '\u001B[1m';
 const ANSI_BOLD_OFF = '\u001B[22m';
