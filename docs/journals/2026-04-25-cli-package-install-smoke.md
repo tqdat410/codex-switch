@@ -11,7 +11,7 @@ The CLI-only pivot passed build, tests, lint, and `npm pack --dry-run`, but code
 
 ## The Brutal Truth
 
-`npm pack --dry-run` looked useful but was not enough. It verified file inclusion, not whether `npm i -g codex-switch` would start. That is exactly the flow the README advertises, so missing this would have shipped a broken first command.
+`npm pack --dry-run` looked useful but was not enough. It verified file inclusion, not whether the documented global install command would start. That is exactly the flow the README advertises, so missing this would have shipped a broken first command.
 
 ## Technical Details
 

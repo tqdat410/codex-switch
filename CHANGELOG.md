@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.8
+
+- Publish npm package under the owned `@tqdat410/codex-switch` scope because the unscoped `codex-switch` name is owned by another npm maintainer.
+
 ## 1.0.7
 
 - Added the pnpm workspace with shared and CLI packages.

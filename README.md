@@ -62,7 +62,7 @@ pnpm --filter @codex-switch/cli exec node dist/index.js ls --json
 After packaging, the intended user flow is:
 
 ```bash
-npm i -g codex-switch
+npm i -g @tqdat410/codex-switch
 cs add --name personal
 cs use personal
 cs ls --refresh
