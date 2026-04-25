@@ -8,14 +8,14 @@
 
 - Switch between multiple Codex OAuth accounts without forking the Codex runtime.
 - Keep image generation, web browsing, MCP tools, and other native Codex capabilities intact.
-- Provide both CLI and local dashboard workflows.
-- Persist account metadata, session history, and quota cache state in a local SQLite database.
+- Provide terminal-first account management and quota visibility.
+- Persist account metadata and quota cache state in local SQLite.
 
 ## Non-Goals
 
 - No API proxying.
 - No per-account `CODEX_HOME` for normal runtime sessions.
-- No remote sync, hosted dashboard, or shared multi-user service.
+- No remote sync, hosted UI, or shared multi-user service.
 - No billing estimation or quota prediction in v1.
 
 ## Primary User Flows
@@ -24,12 +24,10 @@
 2. `cs use <name>` syncs the current active auth back into the vault, swaps the target snapshot into `~/.codex/auth.json`, and launches Codex.
 3. `cs run ...` reuses the same swap-and-launch path for shell aliases such as `alias codex='cs run'`.
 4. `cs` with no subcommand opens a TUI picker with account and cached quota context.
-5. `cs dash` starts the local Next.js dashboard, opens a browser, and runs the local session watcher.
-6. The dashboard supports home, history, and add-account flows through local API routes only.
+5. `cs ls` lists vault accounts with compact 5h and 7d quota bars.
+6. `cs ls --refresh` probes quota before printing; `cs ls --json` keeps machine-readable output.
 
 ## Implemented Feature Scope
-
-### CLI
 
 - `add`
 - `use`
@@ -38,21 +36,7 @@
 - `ls`
 - `current`
 - `sync`
-- `dash`
 - bare `cs` TUI picker
-
-### Dashboard
-
-- `/` account grid
-- `/history` usage charts and sessions table
-- `/add` account onboarding flow
-- `/api/accounts`
-- `/api/accounts/[name]`
-- `/api/active`
-- `/api/add`
-- `/api/sessions`
-- `/api/switch`
-- `/api/usage`
 
 ## Functional Requirements
 
@@ -60,15 +44,17 @@
 - Maintain local state in `~/.codex-switch/state.sqlite`.
 - Keep swaps local and filesystem-based.
 - Block conflicting runtime switches with a session lock.
-- Use read-only ingestion of `~/.codex/history.jsonl` for sessions and on-demand ChatGPT backend probing for quota.
-- Cache quota per account and degrade safely when the backend endpoint or stored auth becomes invalid.
+- Use on-demand ChatGPT backend probing for quota.
+- Cache quota per account and degrade safely when the endpoint or stored auth becomes invalid.
+- Show terminal quota bars for 5h and 7d quota windows.
+- Keep re-auth and stale states visible without inventing quota values.
 
 ## Non-Functional Requirements
 
 - Local-only data handling.
 - Safe file replacement for vault/auth writes.
 - Typecheck, lint, build, and automated test coverage for core helpers.
-- Standalone dashboard packaging for global install use.
+- Publish package contains CLI/shared artifacts only.
 
 ## Local Storage Layout
 
@@ -86,24 +72,26 @@
 
 - Vault files and `~/.codex/auth.json` are sensitive secrets.
 - Logger redacts token-shaped fields and `OPENAI_API_KEY`.
-- Dashboard mutations reject cross-origin requests.
-- The log watcher is read-only against Codex-owned files and quota probing never logs raw tokens.
+- The log watcher is read-only against Codex-owned files.
+- Quota probing never logs raw tokens.
 
 ## Acceptance Criteria
 
-- `pnpm build`, `pnpm typecheck`, `pnpm lint`, `pnpm test`, and `pnpm inspect:codex-logs` pass locally.
+- `pnpm build`, `pnpm typecheck`, `pnpm lint`, and `pnpm test` pass locally, or unrelated failures are documented.
 - CLI command surface is callable from built artifacts.
-- Dashboard builds as standalone output and can be launched from `cs dash`.
+- `cs --help` has no removed commands.
+- `cs ls` renders 5h and 7d quota bars.
+- Packed install exposes working `cs`/`codex-switch` bins.
+- Packed artifacts contain no removed UI files.
 
 ## Known Limitations
 
-- Native smoke for real `add`, `use`, `run`, and `dash` against live Codex auth is still manual.
+- Native smoke for real `add`, `use`, and `run` against live Codex auth is still manual.
 - Cross-platform global-install validation is not complete.
-- Next standalone build still emits an NFT tracing warning around terminal-spawn code.
 - Quota uses undocumented ChatGPT backend endpoints and may need a fallback patch if OpenAI changes them.
 
 ## Deferred Work
 
 - Cross-platform install smoke on a non-Windows platform.
-- End-to-end UI tests and native Codex fidelity smoke.
-- Stronger packaging verification before publish.
+- End-to-end native Codex fidelity smoke.
+- Optional `cs quota [account]` if users need more detail than `cs ls`.

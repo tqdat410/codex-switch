@@ -21,29 +21,6 @@ export function getQuotaCache(db: StateDatabase, account: string) {
   return row ? mapQuotaCacheRow(row) : null;
 }
 
-export function getAllQuotaCache(db: StateDatabase) {
-  const rows = db
-    .prepare(
-      `SELECT
-         account,
-         captured_at,
-         five_hour_percent,
-         five_hour_reset_at,
-         weekly_percent,
-         weekly_reset_at,
-         source,
-         stale_reason
-       FROM quota_cache
-       ORDER BY captured_at DESC, account ASC`,
-    )
-    .all() as DatabaseQuotaCacheRow[];
-
-  return Object.fromEntries(rows.map((row) => [row.account, mapQuotaCacheRow(row)])) as Record<
-    string,
-    QuotaCacheRow
-  >;
-}
-
 export function upsertQuotaCache(
   db: StateDatabase,
   account: string,

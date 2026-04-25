@@ -6,10 +6,6 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
-    },
-    "./api": {
-      "types": "./dist/api.d.ts",
-      "default": "./dist/api.js"
     }
   },
   "files": [
@@ -30,11 +26,8 @@
     "@clack/prompts": "1.2.0",
     "@codex-switch/shared": "workspace:*",
     "better-sqlite3": "12.9.0",
-    "chokidar": "5.0.0",
     "commander": "14.0.3",
     "execa": "9.6.1",
-    "get-port": "7.1.0",
-    "open": "11.0.0",
     "pino": "10.3.1",
     "zod": "4.3.6"
   },

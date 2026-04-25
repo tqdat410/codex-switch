@@ -5,6 +5,7 @@ import {
   fetchQuotaWithCache,
   type FetchQuotaWithCacheResult,
 } from '../core/quota-orchestrator.js';
+import { formatListRows, type ListDisplayRow } from './quota-display.js';
 
 export function registerListCommand(program: Command) {
   program
@@ -18,7 +19,7 @@ export function registerListCommand(program: Command) {
       try {
         const active = getActiveAccount(db);
         const accounts = listAccounts(db);
-        const rows = [];
+        const rows: ListDisplayRow[] = [];
 
         for (const account of accounts) {
           const quota = await readQuotaState(account.name, options.refresh ?? false);
@@ -28,13 +29,14 @@ export function registerListCommand(program: Command) {
             isActive: active?.account === account.name,
             latestQuota: quota.row,
             requiresReauth: quota.requiresReauth,
+            quotaReason: quota.reason,
             quotaSource: quota.source,
             quotaError: quota.error,
           });
         }
 
         if (options.json) {
-          console.log(JSON.stringify(rows, null, 2));
+          console.log(JSON.stringify(rows.map(toJsonRow), null, 2));
           return;
         }
 
@@ -43,20 +45,17 @@ export function registerListCommand(program: Command) {
           return;
         }
 
-        console.table(
-          rows.map((row) => ({
-            active: row.isActive ? '*' : '',
-            name: row.name,
-            email: row.email ?? '',
-            plan: row.plan ?? '',
-            quota: row.requiresReauth ? 'reauth required' : formatQuotaCell(row.latestQuota),
-            lastUsed: row.lastUsedAt ? new Date(row.lastUsedAt).toISOString() : '',
-          })),
-        );
+        console.log(formatListRows(rows));
       } finally {
         db.close();
       }
     });
+}
+
+function toJsonRow(row: ListDisplayRow) {
+  const jsonRow: Partial<ListDisplayRow> = { ...row };
+  delete jsonRow.quotaReason;
+  return jsonRow;
 }
 
 async function readQuotaState(
@@ -77,33 +76,6 @@ async function readQuotaState(
       error: toQuotaErrorSummary(code, error),
     };
   }
-}
-
-function formatQuotaCell(
-  quota: {
-    fiveHourPercent: number | null;
-    weeklyPercent: number | null;
-    staleReason: string | null;
-  } | null,
-) {
-  if (!quota) {
-    return 'quota unavailable';
-  }
-
-  const pieces = [];
-  if (quota.fiveHourPercent !== null) {
-    pieces.push(`5h ${Math.round(quota.fiveHourPercent)}%`);
-  }
-
-  if (quota.weeklyPercent !== null) {
-    pieces.push(`7d ${Math.round(quota.weeklyPercent)}%`);
-  }
-
-  if (quota.staleReason && quota.staleReason !== 'requires_reauth') {
-    pieces.push(`stale:${quota.staleReason}`);
-  }
-
-  return pieces.join(' · ') || 'quota unavailable';
 }
 
 function toQuotaErrorSummary(code: string, error: unknown): QuotaErrorSummary {

@@ -17,18 +17,6 @@ export function authFile() {
   return path.join(codexHome(), 'auth.json');
 }
 
-export function codexHistoryFile() {
-  return path.join(codexHome(), 'history.jsonl');
-}
-
-export function codexLogsDatabaseFile() {
-  return path.join(codexHome(), 'logs_2.sqlite');
-}
-
-export function sessionIndexFile() {
-  return path.join(codexHome(), 'session_index.jsonl');
-}
-
 export function vaultAccountsDir() {
   return path.join(vaultRoot(), 'accounts');
 }
