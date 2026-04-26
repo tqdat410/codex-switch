@@ -26,7 +26,7 @@
 ## Default Launch Flow
 
 1. Bare `cs` reads `~/.codex-switch/config.json`.
-2. If automatic selection is on, it probes or reads cached quota for vault accounts and selects the best available account.
+2. If automatic selection is on, it reads cached quota for vault accounts and selects the best available account.
 3. If automatic selection is off, it opens the account picker.
 4. The selected account flows through the same swap helper as `use`, then launches Codex.
 5. Raw arguments after `cs` are forwarded to the native `codex` binary.
@@ -34,7 +34,7 @@
 ## Explicit Switch Flow
 
 1. `cs switch` syncs the current live auth back into the active vault entry when possible.
-2. It refreshes quota and selects the best available account.
+2. It reads cached quota and selects the best available account.
 3. It copies the selected vault snapshot into `~/.codex/auth.json`.
 4. It records the active account and last-used timestamp.
 5. It does not launch the native `codex` binary.
@@ -53,6 +53,7 @@
 - `auto`: enable, disable, or show automatic account selection.
 - `rm`: remove a vault account and related local state.
 - `status`: list accounts, active marker, metadata, quota bars, and stale/reauth status.
+- `cache`: start, stop, inspect, or refresh the background quota cache.
 - `switch`: automatically switch to the best account without launching Codex.
 - `sync`: persist the current live auth back to its active vault entry.
 - bare `cs`: smart-select an account and launch native Codex.
@@ -65,13 +66,17 @@ Tables in `state.sqlite`:
 - `quota_cache`
 - `account_auth_state`
 - `active`
+- `quota_worker_state`
 
 Shared schema lives in `packages/shared/src/schema.sql`.
 
 ## Quota Probing
 
 - Quota is fetched on demand from `https://chatgpt.com/backend-api/wham/usage` with `/backend-api/codex/usage` fallback.
-- Successful quota probes are cached per account in `quota_cache` with a default 2-minute TTL.
+- Successful quota probes are cached per account in `quota_cache`.
+- Foreground `cs`, `cs switch`, and `cs status` use cache-only quota reads by default.
+- `cs status --refresh` and `cs cache refresh` run exact foreground quota refresh.
+- `cs cache start` launches a detached worker that periodically refreshes due accounts with bounded concurrency and records heartbeat metadata in `quota_worker_state`.
 - Invalid or expired stored auth is surfaced through `account_auth_state` so CLI output can show re-auth status instead of crashing.
 - `cs status` maps cached/probed quota into deterministic ASCII bars and status text.
 
@@ -80,3 +85,4 @@ Shared schema lives in `packages/shared/src/schema.sql`.
 - If quota probing fails, the CLI falls back to the last cached quota row when available.
 - Missing, invalid, or expired vault snapshots are shown as re-auth states.
 - Unknown quota renders as empty bars with `--`, not fabricated percentages.
+- Empty quota cache falls back to active or recently used account selection and prints a cache-start/manual-refresh hint in status output.

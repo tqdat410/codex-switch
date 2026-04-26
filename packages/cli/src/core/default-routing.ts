@@ -1,8 +1,10 @@
 const CODEX_SWITCH_COMMANDS = new Set([
   'add',
   'auto',
+  'cache',
   'current',
   'help',
+  '__cache-worker',
   'rm',
   'remove',
   'status',

@@ -56,6 +56,8 @@ Run validation after code edits that affect runtime behavior.
 - `CODEX_SWITCH_CODEX_BIN`
 - `CODEX_SWITCH_SKIP_LAUNCH`
 - `CODEX_SWITCH_QUOTA_TTL_MS`
+- `CODEX_SWITCH_QUOTA_CACHE_INTERVAL_MS`
+- `CODEX_SWITCH_QUOTA_CACHE_CONCURRENCY`
 - `CODEX_SWITCH_LOG_LEVEL`
 
 ## Generated Artifact Policy

@@ -1,6 +1,7 @@
 import { Command } from 'commander';
 import { registerAddCommand } from './commands/add.js';
 import { registerAutoCommand } from './commands/auto.js';
+import { registerCacheCommand } from './commands/cache.js';
 import { registerRemoveCommand } from './commands/rm.js';
 import { registerStatusCommand } from './commands/status.js';
 import { registerSwitchCommand } from './commands/switch.js';
@@ -21,6 +22,7 @@ program
 registerUseCommand(program);
 registerAddCommand(program);
 registerAutoCommand(program);
+registerCacheCommand(program);
 registerRemoveCommand(program);
 registerStatusCommand(program);
 registerSwitchCommand(program);

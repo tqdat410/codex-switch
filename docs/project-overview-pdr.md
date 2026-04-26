@@ -28,6 +28,7 @@
 6. `cs status` lists vault accounts with compact 5h and 7d quota bars.
 7. `cs status --private` masks email addresses in the table output.
 8. `cs status --refresh` probes quota before printing; `cs status --json` keeps machine-readable output.
+9. `cs cache start|stop|status|refresh` manages the background quota cache updater.
 
 ## Implemented Feature Scope
 
@@ -38,6 +39,7 @@
 - `auto`
 - `switch`
 - `sync`
+- `cache`
 - bare `cs` smart launcher
 
 ## Functional Requirements
@@ -46,7 +48,9 @@
 - Maintain local state in `~/.codex-switch/state.sqlite`.
 - Keep swaps local and filesystem-based.
 - Block conflicting runtime switches with a session lock.
-- Use on-demand ChatGPT backend probing for quota.
+- Use cache-only foreground quota reads by default for bare `cs`, `cs switch`, and `cs status`.
+- Keep exact on-demand ChatGPT backend probing available through `cs status --refresh` and `cs cache refresh`.
+- Refresh quota in a background worker when `cs cache start` is running.
 - Cache quota per account and degrade safely when the endpoint or stored auth becomes invalid.
 - Show terminal quota bars for 5h and 7d quota windows.
 - Keep re-auth and stale states visible without inventing quota values.
@@ -83,6 +87,8 @@
 - CLI command surface is callable from built artifacts.
 - `cs --help` has no removed commands.
 - `cs status` renders 5h and 7d quota bars.
+- `cs status` without `--refresh` does not call quota network.
+- `cs cache start|stop|status|refresh` commands are registered.
 - `cs status --private` masks email addresses in table output.
 - `cs switch` swaps auth without launching Codex.
 - Packed install exposes working `cs`/`codex-switch` bins.
@@ -93,6 +99,7 @@
 - Native smoke for real `add`, `use`, `switch`, and bare `cs` against live Codex auth is still manual.
 - Cross-platform global-install validation is not complete.
 - Quota uses undocumented ChatGPT backend endpoints and may need a fallback patch if OpenAI changes them.
+- The background worker is opt-in; users can still run `cs status --refresh` for manual exact refresh.
 
 ## Deferred Work
 

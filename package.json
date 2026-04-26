@@ -1,6 +1,6 @@
 {
   "name": "@tqdat410/codex-switch",
-  "version": "1.0.11",
+  "version": "1.1.0",
   "description": "Native Codex account switching with a vault-backed CLI.",
   "type": "module",
   "packageManager": "pnpm@10.33.1",

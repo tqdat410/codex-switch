@@ -31,5 +31,15 @@ CREATE TABLE IF NOT EXISTS active (
   switched_at INTEGER NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS quota_worker_state (
+  id INTEGER PRIMARY KEY CHECK (id = 1),
+  pid INTEGER,
+  started_at INTEGER,
+  heartbeat_at INTEGER,
+  interval_ms INTEGER NOT NULL,
+  last_run_at INTEGER,
+  last_error TEXT
+);
+
 CREATE INDEX IF NOT EXISTS idx_quota_cache_captured_at
   ON quota_cache(captured_at DESC);

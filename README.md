@@ -30,7 +30,7 @@ Launch Codex:
 cs
 ```
 
-Bare `cs` refreshes quota, chooses the best available account, swaps auth, and opens native Codex. If one account hits a limit, exit Codex and run `cs` again.
+Bare `cs` reads cached quota, chooses the best available account, swaps auth, and opens native Codex. Keep the cache fresh with `cs cache start` or refresh manually with `cs status --refresh`.
 
 Forward Codex flags as usual:
 
@@ -49,6 +49,10 @@ cs switch                  Switch to the best available account without launchin
 cs status [--refresh]      Show accounts and quota
 cs status --private        Show status table with email masked
 cs status --json           Print machine-readable account status
+cs cache start             Start background quota cache refresh
+cs cache stop              Stop background quota cache refresh
+cs cache status            Show quota cache worker status
+cs cache refresh           Refresh quota cache once in foreground
 cs auto off                Use the manual account picker for bare cs
 cs auto on                 Re-enable automatic account selection
 cs sync                    Save current ~/.codex/auth.json back to the vault
@@ -63,6 +67,10 @@ cs rm <name>               Remove an account from the vault
 - the active account marker
 - 5-hour and weekly quota bars
 - reset times, stale states, and re-auth warnings
+
+By default, bare `cs`, `cs switch`, and `cs status` read local SQLite cache only. Use
+`cs cache start` to keep quota fresh in the background, `cs cache refresh` for a one-shot
+foreground refresh, or `cs status --refresh` when you need exact quota before printing.
 
 Use `cs status --private` to keep the table layout but mask email addresses with `░`, preserving only `@`. JSON output is unchanged and should be treated as machine-readable metadata.
 

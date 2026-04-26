@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.1.0
+
+- Added cache-first foreground quota selection for bare `cs`, `cs switch`, and `cs status`.
+- Added `cs cache start|stop|status|refresh` for background quota refresh.
+- Added quota worker SQLite state, heartbeat tracking, and cache interval/concurrency config.
+- Kept exact foreground refresh available through `cs status --refresh` and `cs cache refresh`.
+
 ## 1.0.11
 
 - Changed `cs status --private` to mask email characters with `░` while preserving `@`.

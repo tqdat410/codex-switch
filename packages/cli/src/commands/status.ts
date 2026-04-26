@@ -5,6 +5,7 @@ import {
   fetchQuotaWithCache,
   type FetchQuotaWithCacheResult,
 } from '../core/quota-orchestrator.js';
+import { getAccountAuthState, getQuotaCache } from '../core/quota-cache.js';
 import { formatListRows, type ListDisplayRow } from './quota-display.js';
 
 export function registerStatusCommand(program: Command) {
@@ -51,6 +52,9 @@ export function registerStatusCommand(program: Command) {
         }
 
         console.log(formatListRows(rows, { private: options.private ?? false }));
+        if (!options.refresh && rows.every((row) => !row.latestQuota)) {
+          console.log('Quota cache empty. Run `cs cache start` or `cs status --refresh`.');
+        }
       } finally {
         db.close();
       }
@@ -67,6 +71,10 @@ async function readQuotaState(
   account: string,
   force: boolean,
 ): Promise<FetchQuotaWithCacheResult> {
+  if (!force) {
+    return readCachedQuotaState(account);
+  }
+
   try {
     return await fetchQuotaWithCache(account, { force });
   } catch (error) {
@@ -80,6 +88,27 @@ async function readQuotaState(
       source: null,
       error: toQuotaErrorSummary(code, error),
     };
+  }
+}
+
+function readCachedQuotaState(account: string): FetchQuotaWithCacheResult {
+  const db = openStateDatabase({ readonly: true });
+
+  try {
+    const row = getQuotaCache(db, account);
+    const authState = getAccountAuthState(db, account);
+    const requiresReauth = authState.requiresReauth || row?.staleReason === 'requires_reauth';
+
+    return {
+      row,
+      fresh: false,
+      reason: requiresReauth ? 'requires_reauth' : 'cache',
+      requiresReauth,
+      source: row ? 'cache' : null,
+      error: authState.lastError ? toQuotaErrorSummary(authState.lastError, null) : null,
+    };
+  } finally {
+    db.close();
   }
 }
 

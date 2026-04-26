@@ -1,5 +1,24 @@
 # Project Changelog
 
+## 2026-04-26
+
+### Added
+
+- `cs cache start|stop|status|refresh` for background quota cache management
+- detached quota cache worker with heartbeat state in SQLite
+- cache-only quota reader for foreground selection and status
+- tests for cache-only selector/status, config env overrides, routing, and worker refresh behavior
+
+### Changed
+
+- bare `cs`, `cs switch`, and `cs status` use cached quota by default instead of foreground quota probing
+- `cs status --refresh` remains exact foreground refresh
+- local SQLite schema now tracks `quota_worker_state`
+
+### Validation
+
+- passed: `pnpm typecheck`, `pnpm lint`, `pnpm build`, `pnpm test`
+
 ## 2026-04-25
 
 ### Added
